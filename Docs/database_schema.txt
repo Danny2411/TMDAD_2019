@@ -1,0 +1,47 @@
+BBDD Schema:
+
+TABLA MENSAJES:
+
+id   src_usr   dst_usr   dst_sala   type   content   timestamp     
+
+TABLA USUARIOS:
+
+id   nombre_usuario (U) 
+
+TABLA SALAS:
+
+id   uri_sala (U)   admin    usr1   usr2   usr3   usr4   usr5   usr6  
+
+
+
+CREATE TABLE IF NOT EXISTS mensajes(
+	id INTEGER AUTO_INCREMENT,
+	src_usr INTEGER NOT NULL,
+	dst_usr	INTEGER NOT NULL,
+	dst_sala INTEGER NOT NULL,
+	type VARCHAR(10) NOT NULL,
+	text VARCHAR(500),
+	file LONGBLOB ,
+	timestamp DATE,
+	PRIMARY KEY (id)
+);
+
+CREATE TABLE IF NOT EXISTS usuarios(
+	id INTEGER AUTO_INCREMENT,
+	nombre_usuario VARCHAR(40) UNIQUE NOT NULL,
+	PRIMARY KEY (id)
+);	
+
+CREATE TABLE IF NOT EXISTS salas(
+	id INTEGER AUTO_INCREMENT,
+	uri_sala VARCHAR(100) UNIQUE NOT NULL,
+	administrador INTEGER NOT NULL, 
+	usr1 INTEGER,
+	usr2 INTEGER,
+	usr3 INTEGER,
+	usr4 INTEGER,
+	usr5 INTEGER,
+	PRIMARY KEY (id)
+);
+	
+	
