@@ -2,7 +2,7 @@ BBDD Schema:
 
 TABLA MENSAJES:
 
-id   src_usr   dst_usr   dst_sala   type   content   timestamp     
+id   src_usr   dst_usr   dst_sala   type   text    file   timestamp     
 
 TABLA USUARIOS:
 
@@ -10,7 +10,7 @@ id   nombre_usuario (U)
 
 TABLA SALAS:
 
-id   uri_sala (U)   admin    usr1   usr2   usr3   usr4   usr5   usr6  
+id   uri_sala (U)   admin    usr1   usr2   usr3   usr4   usr5    
 
 
 
