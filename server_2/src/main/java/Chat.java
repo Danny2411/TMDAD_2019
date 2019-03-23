@@ -1,4 +1,5 @@
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class Chat {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
                     .put("userMessage", createHtmlMessageFromSender(sender, message))
                     .put("userlist", userUsernameMap.values())
+                    .put("currentchannel", (new ArrayList<String>().add("No channel")))
                 ));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -58,6 +60,7 @@ public class Chat {
         	}
         }
         List<String> users = c.getUsers();
+        final ChatRoom current_c = c;
         
     	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
     		String u = userUsernameMap.get(session);
@@ -66,6 +69,7 @@ public class Chat {
 	                session.getRemote().sendString(String.valueOf(new JSONObject()
 	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
 	                    .put("userlist", u)
+	                    .put("currentchannel", current_c.getName())
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();

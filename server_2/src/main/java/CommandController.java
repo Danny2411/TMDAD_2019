@@ -1,7 +1,7 @@
 
 public class CommandController {
 
-	public void parseMessage(ChatRoomsController chat, String msg, String sender) {
+	public ChatRoomsController parseMessage(ChatRoomsController chat, String msg, String sender) {
 		String[] parts = msg.split(" ");
 		switch(parts[0]) {
 			case "!CREATEROOM" :
@@ -25,6 +25,7 @@ public class CommandController {
 				chat.availableRooms(sender);
 				break;
 		}
+		return chat;
 	}
 	
 	

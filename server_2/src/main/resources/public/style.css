@@ -33,11 +33,23 @@ li {
     margin: 0 0 5px 0
 }
 
+
 #userlist {
     position: fixed;
     left: 50%;
     list-style: none;
-    margin-left: 250px;
+    margin-left: 275px;
+    background: #f0f0f9;
+    padding: 5px 10px;
+    width: 150px;
+    top: 11px;
+}
+
+#currentchannel {
+	position: fixed;
+    left: 50%;
+    list-style: none;
+    margin-left: -430px;
     background: #f0f0f9;
     padding: 5px 10px;
     width: 150px;
@@ -71,8 +83,11 @@ li {
     animation: enter .2s 1;
 }
 
+/*
 @keyframes enter {
     from { transform: none;        }
     50%  { transform: scale(1.05); }
     to   { transform: none;        }
 }
+*/
+

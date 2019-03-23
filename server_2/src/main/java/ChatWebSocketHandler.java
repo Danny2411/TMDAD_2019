@@ -25,7 +25,7 @@ public class ChatWebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
         String sender = Chat.userUsernameMap.get(user);
-        cmd.parseMessage(chat, message, sender);
+        chat = cmd.parseMessage(chat, message, sender);
         ChatRoom cr = chat.isUserOnRoom(sender);
     	if(cr != null) {
     		System.out.println("Sending message to " + cr.getId() + " which has " + cr.getUsers().size() + " users");
