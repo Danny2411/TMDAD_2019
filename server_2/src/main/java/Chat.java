@@ -1,5 +1,6 @@
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +44,36 @@ public class Chat {
             span(attrs(".timestamp"), new SimpleDateFormat("HH:mm:ss").format(new Date())),
             p(message)
         ).render();
+    }
+    
+    //Sends a message from one user to all users, along with a list of current usernames
+    public static void sendMessageToChannel(String sender, String message, Long room, ChatRoomsController chat) {
+    	System.out.println( userUsernameMap.values());
+    	ChatRoom c = null;
+    	List<ChatRoom> cr = chat.getChatRooms();
+        for(int i = 0; i < cr.size(); i++ ) {
+        	if(cr.get(i).getId() == room) {
+        		c = cr.get(i);
+        		break;
+        	}
+        }
+        List<String> users = c.getUsers();
+        
+    	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+    		String u = userUsernameMap.get(session);
+    		if (users.contains(u)) {
+    			 try {
+	                session.getRemote().sendString(String.valueOf(new JSONObject()
+	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
+	                    .put("userlist", u)
+	                ));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+    		}
+
+        });
+      
     }
 
 }

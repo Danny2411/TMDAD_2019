@@ -15,6 +15,8 @@ public class CommandController {
 			case "!INVITETOROOM" :
 				break;
 			case "!JOINROOM" :
+				System.out.println(sender + " joining room: " + parts[1]);
+				chat.joinRoom(Long.parseLong(parts[1]), sender);
 				break;
 			case "!LEAVEROOM" :
 				break;

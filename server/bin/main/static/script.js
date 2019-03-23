@@ -26,5 +26,4 @@ function disconnect(){
 }
 function sendMessage(){
 	stompClient.send("/app/message", {}, JSON.stringify({'message': $("#message_input_value").val()}));
-
 }
