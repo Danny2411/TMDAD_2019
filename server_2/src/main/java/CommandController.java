@@ -1,0 +1,29 @@
+
+public class CommandController {
+
+	public void parseMessage(ChatRoomsController chat, String msg, String sender) {
+		String[] parts = msg.split(" ");
+		switch(parts[0]) {
+			case "!CREATEROOM" :
+				System.out.println("Create room: " + parts[1]);
+				chat.createRoom(parts[1], sender);
+				break;
+			case "!DELETEROOM" :
+				System.out.println("Delete room: " + parts[1]);
+				chat.deleteRoom(Long.parseLong(parts[1]));
+				break;
+			case "!INVITETOROOM" :
+				break;
+			case "!JOINROOM" :
+				break;
+			case "!LEAVEROOM" :
+				break;
+			case "!AVAILABLEROOMS":
+				System.out.println("Listing available rooms");
+				chat.availableRooms(sender);
+				break;
+		}
+	}
+	
+	
+}
