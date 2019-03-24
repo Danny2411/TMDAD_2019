@@ -1,3 +1,4 @@
+import java.util.List;
 
 public class CommandController {
 
@@ -9,7 +10,7 @@ public class CommandController {
 				System.out.println("Create room: " + parts[1]);
 				boolean possible = chat.createRoom(parts[1], sender);
 				if(!possible) {
-					ok = "NOTALLOWED";
+					ok = "YAENSALA";
 				}
 				break;
 			case "!DELETEROOM" :
@@ -28,7 +29,15 @@ public class CommandController {
 				break;
 			case "!AVAILABLEROOMS":
 				System.out.println("Listing available rooms");
-				chat.availableRooms(sender);
+				List<ChatRoom> crs = chat.availableRooms(sender);
+				ok += "CHATROOMS" + "!";
+				if (crs.size() == 0) {
+					ok += "No hay salas disponibles.";
+				} else {
+					for(ChatRoom c : crs) {
+						ok += "SALA " + c.getId() + ": " + c.getName() + ";";
+					}
+				}
 				break;
 			case "!SEND":
 				System.out.println("Sending message to " + parts[1]);

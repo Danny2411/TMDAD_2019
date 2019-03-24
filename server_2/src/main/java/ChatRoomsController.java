@@ -40,8 +40,8 @@ public class ChatRoomsController {
 	}
 	
 	// List available rooms
-	public void availableRooms(String user) {
-
+	public List<ChatRoom> availableRooms(String user) {
+		return this.chatRooms;
 	}
 	
 	// Join an existing room

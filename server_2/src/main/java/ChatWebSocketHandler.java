@@ -28,16 +28,19 @@ public class ChatWebSocketHandler {
         Pair<ChatRoomsController, String> res = cmd.parseMessage(chat, message, sender);
         chat = res.getFirst();
     
-        if(res.getSecond().equals("NOTALLOWED")) {
-        	System.out.println("Nope");
-        	chat = Chat.serverSaysToUser("Server", "No se puede realizar esa acción.", chat, sender);
+        if(res.getSecond().equals("YAENSALA")) {
+        	chat = Chat.serverSaysToUser("Server", "No se puede crear una sala estando en otra.", chat, sender);
         }
         else if(res.getSecond().contains("SENDMSG")) {
-        	System.out.println(res.getSecond());
         	String dest = res.getSecond().split("!")[1];
-        	System.out.println(dest);
         	message = message.split(" ")[2];
         	chat = Chat.userSaysToUser(sender, message, chat, dest);
+        } else if (res.getSecond().contains("CHATROOMS")){
+        	String crs = res.getSecond().split("!")[1];
+        	String[] salas = crs.split(";");
+        	for(String s : salas) {
+        		chat = Chat.serverSaysToUser("Server", s, chat, sender);
+        	}
         } else {
 	        ChatRoom cr = chat.isUserOnRoom(sender);
 	    	if(cr != null) {
