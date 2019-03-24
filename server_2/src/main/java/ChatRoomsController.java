@@ -15,10 +15,14 @@ public class ChatRoomsController {
 	private long lastId = 0;
 	
 	// Create a new room
-	public void createRoom(String name, String user) {
+	public boolean createRoom(String name, String user) {
+		if(isUserOnRoom(user) != null) {
+			return false;
+		}
 		ChatRoom newRoom = new ChatRoom(lastId, name, user);
 		lastId += 1;
 		chatRooms.add(newRoom);
+		return true;
 	}
 	
 	// Delete an existing room
@@ -88,6 +92,9 @@ public class ChatRoomsController {
 			}
 			if(onRoom) {
 				c.userLeaves(user);
+				if(c.getUsers().size() <= 0) {
+					deleteRoom(c.getId());
+				}
 				return true;
 			}
 		}

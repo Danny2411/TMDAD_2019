@@ -30,7 +30,7 @@ public class Chat {
         	String channel = "";
         	ChatRoom c = chat.isUserOnRoom(userUsernameMap.get(session));
         	if(c != null) {
-        		channel = c.getName();
+        		channel = c.getName() + " - ID: " + c.getId();
         	} else {
         		channel = "No channel";
         	}
@@ -79,7 +79,101 @@ public class Chat {
 	                session.getRemote().sendString(String.valueOf(new JSONObject()
 	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
 	                    .put("userlist", userUsernameMap.values())
-	                    .put("currentchannel", current_c.getName())
+	                    .put("currentchannel", current_c.getName() + " - ID: " + current_c.getId())
+	                ));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+    		}
+
+        });
+    	
+    	return chat;
+      
+    }
+    
+  //Sends a message from one user to all users, along with a list of current usernames
+    public static ChatRoomsController serverSaysToUser(String sender, String msg, ChatRoomsController chat, String user) {
+    	
+    	ChatRoom c = null;
+    	List<ChatRoom> cr = chat.getChatRooms();
+        for(int i = 0; i < cr.size(); i++ ) {
+        	for(String uir : cr.get(i).getUsers()) {
+        		System.out.println(uir);
+        		System.out.println(user);
+        		if(uir.equals(user)) {
+        			c = cr.get(i);
+        			System.out.println("FOUND");
+            		break;
+        		}
+        	}
+        }
+      
+        String currentchannel = "";
+        if (c != null) {
+        	currentchannel = c.getName() + " - ID: " + c.getId();
+        } else {
+        	currentchannel = "No channel";
+        }
+        System.out.println(currentchannel);
+        final String ch = currentchannel;
+        System.out.println(ch);
+        
+    	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+    		String u = userUsernameMap.get(session);
+    		if (user.equals(u)) {
+    			 try {
+	                session.getRemote().sendString(String.valueOf(new JSONObject()
+	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
+	                    .put("userlist", userUsernameMap.values())
+	                    .put("currentchannel", ch)
+	                ));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+    		}
+
+        });
+    	
+    	return chat;
+      
+    }
+    
+  //Sends a message from one user to all users, along with a list of current usernames
+    public static ChatRoomsController userSaysToUser(String sender, String msg, ChatRoomsController chat, String user) {
+    	
+    	ChatRoom c = null;
+    	List<ChatRoom> cr = chat.getChatRooms();
+        for(int i = 0; i < cr.size(); i++ ) {
+        	for(String uir : cr.get(i).getUsers()) {
+        		System.out.println(uir);
+        		System.out.println(user);
+        		if(uir.equals(user)) {
+        			c = cr.get(i);
+        			System.out.println("FOUND");
+            		break;
+        		}
+        	}
+        }
+      
+        String currentchannel = "";
+        if (c != null) {
+        	currentchannel = c.getName() + " - ID: " + c.getId();
+        } else {
+        	currentchannel = "No channel";
+        }
+        System.out.println(currentchannel);
+        final String ch = currentchannel;
+        System.out.println(ch);
+        
+    	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+    		String u = userUsernameMap.get(session);
+    		if (user.equals(u)) {
+    			 try {
+	                session.getRemote().sendString(String.valueOf(new JSONObject()
+	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
+	                    .put("userlist", userUsernameMap.values())
+	                    .put("currentchannel", ch)
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();

@@ -25,14 +25,21 @@ public class ChatWebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
         String sender = Chat.userUsernameMap.get(user);
-        ChatRoom cr = chat.isUserOnRoom(sender);
-        chat = cmd.parseMessage(chat, message, sender);
-    	if(cr != null) {
-    		System.out.println("Sending message to " + cr.getId() + " which has " + cr.getUsers().size() + " users");
-    		chat = Chat.sendMessageToChannel(sender = Chat.userUsernameMap.get(user), msg = message, cr.getId(), chat);
-    	} else {
-    		chat = Chat.broadcastMessage(sender = Chat.userUsernameMap.get(user), msg = message, chat);
-    	}
+        Pair<ChatRoomsController, Boolean> res = cmd.parseMessage(chat, message, sender);
+        chat = res.getFirst();
+        boolean ok = res.getSecond();
+        if(ok == false) {
+        	System.out.println("Nope");
+        	chat = Chat.serverSaysToUser("Server", "No se puede realizar esa acción.", chat, sender);
+        } else {
+	        ChatRoom cr = chat.isUserOnRoom(sender);
+	    	if(cr != null) {
+	    		System.out.println("Sending message to " + cr.getId() + " which has " + cr.getUsers().size() + " users");
+	    		chat = Chat.sendMessageToChannel(sender = Chat.userUsernameMap.get(user), msg = message, cr.getId(), chat);
+	    	} else {
+	    		chat = Chat.broadcastMessage(sender = Chat.userUsernameMap.get(user), msg = message, chat);
+	    	}
+        }
     }
     
 
