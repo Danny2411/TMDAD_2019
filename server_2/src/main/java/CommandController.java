@@ -19,6 +19,8 @@ public class CommandController {
 				chat.joinRoom(Long.parseLong(parts[1]), sender);
 				break;
 			case "!LEAVEROOM" :
+				System.out.println(sender + " leaving room");
+				chat.leaveRoom(sender);
 				break;
 			case "!AVAILABLEROOMS":
 				System.out.println("Listing available rooms");

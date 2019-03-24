@@ -37,13 +37,14 @@ public class ChatRoomsController {
 	
 	// List available rooms
 	public void availableRooms(String user) {
-		for (ChatRoom c : chatRooms) {
-			Chat.broadcastMessage("Server", c.toString());
-		}
+
 	}
 	
 	// Join an existing room
-	public void joinRoom(Long id, String user) {
+	public boolean joinRoom(Long id, String user) {
+		if(isUserOnRoom(user) != null) {
+			return false;
+		}
 		int idx = -1;
 		for(int i = 0; i < chatRooms.size(); i++) {
 			if (chatRooms.get(i).getId() == id) {
@@ -54,11 +55,13 @@ public class ChatRoomsController {
 		if (idx >= 0) {
 			for(String u : chatRooms.get(idx).getUsers()) {
 				if(u == user) {
-					return;
+					return false;
 				}
 			}
 			chatRooms.get(idx).userJoins(user);
+			return true;
 		}
+		return false;
 	}
 	
 	// Check if a user is on a room
@@ -72,6 +75,23 @@ public class ChatRoomsController {
 			}
 		}
 		return null;
+	}
+	
+	// Leave a room
+	public boolean leaveRoom(String user) {
+		for(ChatRoom c : chatRooms) {
+			boolean onRoom = false;
+			for(String u : c.getUsers()) {
+				if (u.equals(user)){
+					onRoom = true;
+				}
+			}
+			if(onRoom) {
+				c.userLeaves(user);
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	

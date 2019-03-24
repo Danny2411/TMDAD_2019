@@ -25,18 +25,27 @@ public class Chat {
     }
 
     //Sends a message from one user to all users, along with a list of current usernames
-    public static void broadcastMessage(String sender, String message) {
+    public static ChatRoomsController broadcastMessage(String sender, String message, ChatRoomsController chat) {
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+        	String channel = "";
+        	ChatRoom c = chat.isUserOnRoom(userUsernameMap.get(session));
+        	if(c != null) {
+        		channel = c.getName();
+        	} else {
+        		channel = "No channel";
+        	}
             try {
                 session.getRemote().sendString(String.valueOf(new JSONObject()
                     .put("userMessage", createHtmlMessageFromSender(sender, message))
                     .put("userlist", userUsernameMap.values())
-                    .put("currentchannel", (new ArrayList<String>().add("No channel")))
+                    .put("currentchannel", channel)
                 ));
             } catch (Exception e) {
                 e.printStackTrace();
             }
         });
+        
+        return chat;
     }
 
     //Builds a HTML element with a sender-name, a message, and a timestamp,
@@ -49,8 +58,8 @@ public class Chat {
     }
     
     //Sends a message from one user to all users, along with a list of current usernames
-    public static void sendMessageToChannel(String sender, String message, Long room, ChatRoomsController chat) {
-    	System.out.println( userUsernameMap.values());
+    public static ChatRoomsController sendMessageToChannel(String sender, String message, Long room, ChatRoomsController chat) {
+    	
     	ChatRoom c = null;
     	List<ChatRoom> cr = chat.getChatRooms();
         for(int i = 0; i < cr.size(); i++ ) {
@@ -60,6 +69,7 @@ public class Chat {
         	}
         }
         List<String> users = c.getUsers();
+        System.out.println( userUsernameMap.values());
         final ChatRoom current_c = c;
         
     	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
@@ -68,7 +78,7 @@ public class Chat {
     			 try {
 	                session.getRemote().sendString(String.valueOf(new JSONObject()
 	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
-	                    .put("userlist", u)
+	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", current_c.getName())
 	                ));
 	            } catch (Exception e) {
@@ -77,6 +87,8 @@ public class Chat {
     		}
 
         });
+    	
+    	return chat;
       
     }
 

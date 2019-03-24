@@ -30,9 +30,8 @@ function updateChat(msg) {
         insert("userlist", "<li>" + user + "</li>");
     });
     id("currentchannel").innerHTML = "";
-    data.currentchannel.forEach(function (channel) {
-        insert("currentchannel", "<li>" + channel + "</li>");
-    });
+    insert("currentchannel", "<li>" + data.currentchannel + "</li>");
+ 
 }
 
 //Helper function for inserting HTML as the first child of an element
