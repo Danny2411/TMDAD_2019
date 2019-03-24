@@ -25,7 +25,7 @@ public class CommandController {
 				break;
 			case "!LEAVEROOM" :
 				System.out.println(sender + " leaving room");
-				chat.leaveRoom(sender);
+				ok = "LEAVINGROOM";
 				break;
 			case "!AVAILABLEROOMS":
 				System.out.println("Listing available rooms");
@@ -34,6 +34,7 @@ public class CommandController {
 				if (crs.size() == 0) {
 					ok += "No hay salas disponibles.";
 				} else {
+					ok += "A continuación se mostrarán las salas disponibles." + ";";
 					for(ChatRoom c : crs) {
 						ok += "SALA " + c.getId() + ": " + c.getName() + ";";
 					}

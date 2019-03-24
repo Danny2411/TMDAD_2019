@@ -41,12 +41,21 @@ public class ChatWebSocketHandler {
         	for(String s : salas) {
         		chat = Chat.serverSaysToUser("Server", s, chat, sender);
         	}
+        } else if(res.getSecond().equals("LEAVINGROOM")) { 
+        	ChatRoom cr = chat.isUserOnRoom(sender);
+        	if(cr != null) {
+				chat.leaveRoom(sender);
+        		chat = Chat.serverSaysToUser("Server", "Abandonando sala " + cr.getName() + ".", chat, sender);
+        	} else {
+        		chat = Chat.serverSaysToUser("Server", "Solo se puede abandonar una sala si estás dentro de ella.", chat, sender);
+        	}
         } else {
 	        ChatRoom cr = chat.isUserOnRoom(sender);
 	    	if(cr != null) {
 	    		System.out.println("Sending message to " + cr.getId() + " which has " + cr.getUsers().size() + " users");
 	    		chat = Chat.sendMessageToChannel(sender = Chat.userUsernameMap.get(user), msg = message, cr.getId(), chat);
 	    	} else {
+	    		// Ahora mismo, cualquier mensaje fuera de salas y sin ser CMD se hace broadcast
 	    		chat = Chat.broadcastMessage(sender = Chat.userUsernameMap.get(user), msg = message, chat);
 	    	}
         }
