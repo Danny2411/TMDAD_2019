@@ -39,6 +39,12 @@ public class ChatWebSocketHandler {
         } 
         else if(res.getSecond().contains("JOINED")) {
         	chat = Chat.serverSaysToUser("Server", "Te has unido a la sala " + chat.isUserOnRoom(sender).getName(), chat, sender);
+        	ChatRoom cr = chat.isUserOnRoom(sender);
+        	for(String u : cr.getUsers()) {
+        		if(!u.equals(sender)) {
+        			chat = Chat.serverSaysToUser("Server", sender + " se ha unido a la sala." , chat, u);
+        		}
+        	}
         }  
         else if(res.getSecond().contains("SENDMSGTOROOM")) {
         	 ChatRoom cr = chat.isUserOnRoom(sender);
@@ -74,6 +80,9 @@ public class ChatWebSocketHandler {
         		chat = Chat.serverSaysToUser("Server", "Solo se puede abandonar una sala si estás dentro de ella.", chat, sender);
         	}
         } 
+        else if(res.getSecond().equals("CLEAR")) {
+    		chat = Chat.serverSaysToUser("Server", "CLEAR CHATS", chat, sender);
+        }
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }

@@ -24,7 +24,21 @@ function sendMessage(message) {
 //Update the chat-panel, and the list of connected users
 function updateChat(msg) {
     var data = JSON.parse(msg.data);
-    insert("chat", data.userMessage);
+    if(data.userMessage.includes("CLEAR CHAT")){
+    	clearBox("chat");
+    } else {
+	    if(data.userMessage.includes("Te has unido")){
+	    	clearBox("chat");
+	    }
+	    if(data.userMessage.includes("Abandonando")){
+	    	clearBox("chat");
+	    }
+	    if(data.userMessage.includes("Sala creada")){
+	    	clearBox("chat");
+	    }
+	    insert("chat", data.userMessage);
+	}
+    
     id("userlist").innerHTML = "";
     data.userlist.forEach(function (user) {
         insert("userlist", "<li>" + user + "</li>");
@@ -42,4 +56,10 @@ function insert(targetId, message) {
 //Helper function for selecting element by id
 function id(id) {
     return document.getElementById(id);
+}
+
+//Clear chat
+function clearBox(elementID)
+{
+    document.getElementById(elementID).innerHTML = "";
 }

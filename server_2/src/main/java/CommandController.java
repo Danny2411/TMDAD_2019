@@ -60,6 +60,9 @@ public class CommandController {
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];
 				break;
+			case "!CLEAR":
+				ok = "CLEAR";
+				break;
 		}
 		return new Pair<ChatRoomsController, String>(chat,ok);
 	}
