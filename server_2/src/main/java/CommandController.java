@@ -1,13 +1,16 @@
 
 public class CommandController {
 
-	public Pair<ChatRoomsController, Boolean> parseMessage(ChatRoomsController chat, String msg, String sender) {
+	public Pair<ChatRoomsController, String> parseMessage(ChatRoomsController chat, String msg, String sender) {
 		String[] parts = msg.split(" ");
-		boolean ok = true;
+		String ok = "";
 		switch(parts[0]) {
 			case "!CREATEROOM" :
 				System.out.println("Create room: " + parts[1]);
-				ok = chat.createRoom(parts[1], sender);
+				boolean possible = chat.createRoom(parts[1], sender);
+				if(!possible) {
+					ok = "NOTALLOWED";
+				}
 				break;
 			case "!DELETEROOM" :
 				System.out.println("Delete room: " + parts[1]);
@@ -27,8 +30,12 @@ public class CommandController {
 				System.out.println("Listing available rooms");
 				chat.availableRooms(sender);
 				break;
+			case "!SEND":
+				System.out.println("Sending message to " + parts[1]);
+				ok = "SENDMSG" + "!" + parts[1];
+				break;
 		}
-		return new Pair<ChatRoomsController, Boolean>(chat,ok);
+		return new Pair<ChatRoomsController, String>(chat,ok);
 	}
 	
 	

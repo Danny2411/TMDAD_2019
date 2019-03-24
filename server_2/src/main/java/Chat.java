@@ -159,28 +159,30 @@ public class Chat {
         String currentchannel = "";
         if (c != null) {
         	currentchannel = c.getName() + " - ID: " + c.getId();
+        	// Como el receptor está en una sala, no le llegará el mensaje de primeras
+        	serverSaysToUser("Server", "No se pudo entregar el mensaje a " + user , chat, sender);
         } else {
         	currentchannel = "No channel";
-        }
-        System.out.println(currentchannel);
-        final String ch = currentchannel;
-        System.out.println(ch);
-        
-    	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
-    		String u = userUsernameMap.get(session);
-    		if (user.equals(u)) {
-    			 try {
-	                session.getRemote().sendString(String.valueOf(new JSONObject()
-	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
-	                    .put("userlist", userUsernameMap.values())
-	                    .put("currentchannel", ch)
-	                ));
-	            } catch (Exception e) {
-	                e.printStackTrace();
-	            }
-    		}
+        	String ch = currentchannel;
+        	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+        		String u = userUsernameMap.get(session);
+        		if (user.equals(u)) {
+        			 try {
+    	                session.getRemote().sendString(String.valueOf(new JSONObject()
+    	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
+    	                    .put("userlist", userUsernameMap.values())
+    	                    .put("currentchannel", ch)
+    	                ));
+    	            } catch (Exception e) {
+    	                e.printStackTrace();
+    	            }
+        		}
 
-        });
+            });
+        	
+        }
+ 
+        
     	
     	return chat;
       

@@ -25,12 +25,19 @@ public class ChatWebSocketHandler {
     @OnWebSocketMessage
     public void onMessage(Session user, String message) {
         String sender = Chat.userUsernameMap.get(user);
-        Pair<ChatRoomsController, Boolean> res = cmd.parseMessage(chat, message, sender);
+        Pair<ChatRoomsController, String> res = cmd.parseMessage(chat, message, sender);
         chat = res.getFirst();
-        boolean ok = res.getSecond();
-        if(ok == false) {
+    
+        if(res.getSecond().equals("NOTALLOWED")) {
         	System.out.println("Nope");
         	chat = Chat.serverSaysToUser("Server", "No se puede realizar esa acción.", chat, sender);
+        }
+        else if(res.getSecond().contains("SENDMSG")) {
+        	System.out.println(res.getSecond());
+        	String dest = res.getSecond().split("!")[1];
+        	System.out.println(dest);
+        	message = message.split(" ")[2];
+        	chat = Chat.userSaysToUser(sender, message, chat, dest);
         } else {
 	        ChatRoom cr = chat.isUserOnRoom(sender);
 	    	if(cr != null) {
