@@ -26,7 +26,7 @@ public class ChatRoomsController {
 	}
 	
 	// Delete an existing room
-	public void deleteRoom(Long id) {
+	public boolean deleteRoom(Long id) {
 		int idx = -1;
 		for(int i = 0; i < chatRooms.size(); i++) {
 			if (chatRooms.get(i).getId() == id) {
@@ -36,7 +36,9 @@ public class ChatRoomsController {
 		}
 		if (idx >= 0) {
 			chatRooms.remove(idx);
+			return true;
 		}
+		return false;
 	}
 	
 	// List available rooms

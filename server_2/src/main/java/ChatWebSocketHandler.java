@@ -31,33 +31,51 @@ public class ChatWebSocketHandler {
         if(res.getSecond().equals("YAENSALA")) {
         	chat = Chat.serverSaysToUser("Server", "No se puede crear una sala estando en otra.", chat, sender);
         }
+        else if(res.getSecond().contains("CREATED")) {
+        	chat = Chat.serverSaysToUser("Server", "Sala creada con éxito.", chat, sender);
+        } 
+        else if(res.getSecond().contains("NOJOIN")) {
+        	chat = Chat.serverSaysToUser("Server", "No es posible unirse a esa sala.", chat, sender);
+        } 
+        else if(res.getSecond().contains("JOINED")) {
+        	chat = Chat.serverSaysToUser("Server", "Te has unido a la sala " + chat.isUserOnRoom(sender).getName(), chat, sender);
+        }  
+        else if(res.getSecond().contains("SENDMSGTOROOM")) {
+        	 ChatRoom cr = chat.isUserOnRoom(sender);
+        	 if(cr != null) {
+        		 chat = Chat.sendMessageToChannel(sender, res.getSecond().split("!")[1], cr.getId(), chat);
+        	 } else {
+        		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
+        	 }
+        } 
         else if(res.getSecond().contains("SENDMSG")) {
         	String dest = res.getSecond().split("!")[1];
         	message = message.split(" ")[2];
         	chat = Chat.userSaysToUser(sender, message, chat, dest);
-        } else if (res.getSecond().contains("CHATROOMS")){
+        }
+        else if (res.getSecond().contains("CHATROOMS")){
         	String crs = res.getSecond().split("!")[1];
         	String[] salas = crs.split(";");
         	for(String s : salas) {
         		chat = Chat.serverSaysToUser("Server", s, chat, sender);
         	}
-        } else if(res.getSecond().equals("LEAVINGROOM")) { 
+        } 
+        else if(res.getSecond().equals("LEAVINGROOM")) { 
         	ChatRoom cr = chat.isUserOnRoom(sender);
         	if(cr != null) {
 				chat.leaveRoom(sender);
         		chat = Chat.serverSaysToUser("Server", "Abandonando sala " + cr.getName() + ".", chat, sender);
+        		if(cr.getUsers().size() > 0) {
+        			for(String u : cr.getUsers()) {
+        				chat = Chat.serverSaysToUser("Server", sender + " ha abandonado la sala.", chat, u);
+        			}
+        		}
         	} else {
         		chat = Chat.serverSaysToUser("Server", "Solo se puede abandonar una sala si estás dentro de ella.", chat, sender);
         	}
-        } else {
-	        ChatRoom cr = chat.isUserOnRoom(sender);
-	    	if(cr != null) {
-	    		System.out.println("Sending message to " + cr.getId() + " which has " + cr.getUsers().size() + " users");
-	    		chat = Chat.sendMessageToChannel(sender = Chat.userUsernameMap.get(user), msg = message, cr.getId(), chat);
-	    	} else {
-	    		// Ahora mismo, cualquier mensaje fuera de salas y sin ser CMD se hace broadcast
-	    		chat = Chat.broadcastMessage(sender = Chat.userUsernameMap.get(user), msg = message, chat);
-	    	}
+        } 
+        else {
+        	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }
     }
     

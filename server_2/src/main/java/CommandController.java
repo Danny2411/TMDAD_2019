@@ -11,17 +11,31 @@ public class CommandController {
 				boolean possible = chat.createRoom(parts[1], sender);
 				if(!possible) {
 					ok = "YAENSALA";
+				} else {
+					ok = "CREATED";
 				}
 				break;
 			case "!DELETEROOM" :
+				/*
 				System.out.println("Delete room: " + parts[1]);
-				chat.deleteRoom(Long.parseLong(parts[1]));
+				boolean success = chat.deleteRoom(Long.parseLong(parts[1]));
+				if(!success) {
+					ok = "NOPOSIBLEBORRAR";
+				} else {
+					ok = "DELETED";
+				}
+				*/
 				break;
 			case "!INVITETOROOM" :
 				break;
 			case "!JOINROOM" :
 				System.out.println(sender + " joining room: " + parts[1]);
-				chat.joinRoom(Long.parseLong(parts[1]), sender);
+				boolean success = chat.joinRoom(Long.parseLong(parts[1]), sender);
+				if(!success) {
+					ok = "NOJOIN";
+				} else {
+					ok = "JOINED";
+				}
 				break;
 			case "!LEAVEROOM" :
 				System.out.println(sender + " leaving room");
@@ -41,8 +55,10 @@ public class CommandController {
 				}
 				break;
 			case "!SEND":
-				System.out.println("Sending message to " + parts[1]);
 				ok = "SENDMSG" + "!" + parts[1];
+				break;
+			case "!SENDR":
+				ok = "SENDMSGTOROOM" + "!" + parts[1];
 				break;
 		}
 		return new Pair<ChatRoomsController, String>(chat,ok);
