@@ -30,7 +30,11 @@ public class Chat {
         	String channel = "";
         	ChatRoom c = chat.isUserOnRoom(userUsernameMap.get(session));
         	if(c != null) {
-        		channel = c.getName() + " - ID: " + c.getId();
+        		if(c.getPriv() == false) {
+        			channel = c.getName() + " - ID: " + c.getId();
+            	} else {
+            		channel = c.getName();
+            	}
         	} else {
         		channel = "No channel";
         	}
@@ -71,15 +75,23 @@ public class Chat {
         List<String> users = c.getUsers();
         System.out.println( userUsernameMap.values());
         final ChatRoom current_c = c;
+        String name = "";
+        if(current_c.getPriv() == false) {
+        	name = current_c.getName() + " - ID: " + current_c.getId();
+        } else {
+        	name = current_c.getName();
+        }
         
+        final String final_name = name;
     	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
     		String u = userUsernameMap.get(session);
     		if (users.contains(u)) {
     			 try {
+    				
 	                session.getRemote().sendString(String.valueOf(new JSONObject()
 	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
 	                    .put("userlist", userUsernameMap.values())
-	                    .put("currentchannel", current_c.getName() + " - ID: " + current_c.getId())
+	                    .put("currentchannel", final_name)
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -111,7 +123,11 @@ public class Chat {
       
         String currentchannel = "";
         if (c != null) {
-        	currentchannel = c.getName() + " - ID: " + c.getId();
+        	if(c.getPriv() == false) {
+        		currentchannel = c.getName() + " - ID: " + c.getId();
+        	} else {
+        		currentchannel = c.getName();
+        	}
         } else {
         	currentchannel = "No channel";
         }
@@ -158,8 +174,12 @@ public class Chat {
       
         String currentchannel = "";
         if (c != null) {
-        	currentchannel = c.getName() + " - ID: " + c.getId();
-        	// Como el receptor está en una sala, no le llegará el mensaje de primeras
+        	if(c.getPriv() == false) {
+        		currentchannel = c.getName() + " - ID: " + c.getId();
+        	} else {
+        		currentchannel = c.getName();
+        	}
+        		// Como el receptor está en una sala, no le llegará el mensaje de primeras
         	serverSaysToUser("Server", "No se pudo entregar el mensaje a " + user , chat, sender);
         } else {
         	currentchannel = "No channel";

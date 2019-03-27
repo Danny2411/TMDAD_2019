@@ -55,7 +55,14 @@ public class CommandController {
 				}
 				break;
 			case "!SEND":
-				ok = "SENDMSG" + "!" + parts[1];
+				// Check if user is on a private room with the other
+				String dest = parts[1];
+				String msg2 = parts[2];
+				ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
+				if(ok.contains("!")) {
+					ok += msg2;
+				}
+				System.out.println("Trying to create room with " + parts[1]);
 				break;
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];

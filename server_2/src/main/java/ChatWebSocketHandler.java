@@ -48,8 +48,13 @@ public class ChatWebSocketHandler {
         }  
         else if(res.getSecond().contains("SENDMSGTOROOM")) {
         	 ChatRoom cr = chat.isUserOnRoom(sender);
+        	 String m = res.getSecond();
+        	 if(res.getSecond().contains("CLEAR::")) {
+        		 chat = Chat.serverSaysToUser("Server", "CLEAR CHATS", chat, sender);
+        		 m = m.replaceAll("CLEAR::", "");
+        	 }
         	 if(cr != null) {
-        		 chat = Chat.sendMessageToChannel(sender, res.getSecond().split("!")[1], cr.getId(), chat);
+        		 chat = Chat.sendMessageToChannel(sender, m.split("!")[1], cr.getId(), chat);
         	 } else {
         		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
         	 }

@@ -7,6 +7,8 @@ public class ChatRoom {
 	private String name;
 	private List <String> users;
 	private List <String> messages;
+	private boolean priv = false;
+	private String allowed;
 	
 	// Constructor
 	public ChatRoom(long id, String name, String user) {
@@ -15,6 +17,18 @@ public class ChatRoom {
 		this.users = new ArrayList<String>();
 		this.messages = new ArrayList<String>();
 		this.users.add(user);
+		this.priv = false;
+		this.allowed = null;
+	}
+	
+	public ChatRoom(long id, String name, String user, boolean priv, String allowed) {
+		this.id = id;
+		this.name = name;
+		this.users = new ArrayList<String>();
+		this.messages = new ArrayList<String>();
+		this.users.add(user);
+		this.priv = priv;
+		this.allowed = allowed;
 	}
 	
 	// Getters and Setters
@@ -41,6 +55,18 @@ public class ChatRoom {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public boolean getPriv() {
+		return this.priv;
+	}
+	public void setPriv(boolean priv) {
+		this.priv = priv;
+	}
+	public String getAllowed() {
+		return this.allowed;
+	}
+	public void setAllowed(String allowed) {
+		this.allowed = allowed;
 	}
 	
 	// Modify room

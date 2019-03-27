@@ -25,6 +25,33 @@ public class ChatRoomsController {
 		return true;
 	}
 	
+	// Create a new private room for a 2-chat
+	public String createPrivateRoom(String name, String user1, String user2) {
+		ChatRoom c = isUserOnRoom(user1);
+		if(c != null && (c.getPriv() == false || (c.getPriv() == true && c.getAllowed() != user2) ) ) {
+			return "YAENSALA";
+		} else if ((c != null && c.getPriv() == true && c.getUsers().contains(user1) && c.getAllowed().equals(user2)) ||
+				(c != null && c.getPriv() == true && c.getUsers().contains(user2) && c.getAllowed().equals(user1))) {
+			// ya está donde debe estar
+			return "SENDMSGTOROOM" + "!";
+		} else if (c == null) {
+			// Check if the other user already created 
+			for(ChatRoom cr : chatRooms) {
+				if(cr.getPriv() == true && cr.getAllowed().equals(user1) && cr.getUsers().contains(user2)) {
+					joinRoom(cr.getId(), user1);
+					return "CLEAR::SENDMSGTOROOM" + "!";
+				}
+			}
+			// If the other didnt created it, check if you are already in
+			ChatRoom newRoom = new ChatRoom(lastId, name, user1, true, user2);
+			lastId += 1;
+			chatRooms.add(newRoom);
+			return "CLEAR::SENDMSGTOROOM" + "!";
+		} else {
+			return "";
+		}
+	}
+	
 	// Delete an existing room
 	public boolean deleteRoom(Long id) {
 		int idx = -1;
