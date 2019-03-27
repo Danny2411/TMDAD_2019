@@ -40,7 +40,11 @@ public class ChatWebSocketHandler {
         Pair<ChatRoomsController, String> res = cmd.parseMessage(chat, message, sender);
         chat = res.getFirst();
     
-        if(res.getSecond().equals("YAENSALA")) {
+        if(res.getSecond().equals("HELP")) {
+        	String cmds = cmd.listCommands();
+        	chat = Chat.serverSaysToUser("Server", cmds, chat, sender);
+        }
+        else if(res.getSecond().equals("YAENSALA")) {
         	chat = Chat.serverSaysToUser("Server", "No se puede crear una sala estando en otra.", chat, sender);
         }
         else if(res.getSecond().contains("CREATED")) {
@@ -105,23 +109,28 @@ public class ChatWebSocketHandler {
         } 
         else if(res.getSecond().contains("NAME!")) {
         	String newName = res.getSecond().replaceAll("NAME!","");
-        	// Change name in user map
-        	Chat.userUsernameMap.put(user, newName);
-        	// Change name in rooms
-        	for(ChatRoom c : chat.getChatRooms()) {
-        		List<String> newU = new ArrayList<String>();
-        		if(c.getUsers().contains(sender)) {
-        			for(String u : c.getUsers()) {
-        				if(u.equals(sender) == false) {
-        					newU.add(u);
-        		        	chat = Chat.serverSaysToUser("Server", sender + " ahora se llama " + newName, chat, u);
-        				}
-        			}
-        			newU.add(newName);
-        			c.setUsers(newU); 	
-        		}
+        	// Change if name is not taken
+        	if(Chat.userUsernameMap.values().contains(newName) == false) {
+	        	// Change name in user map
+	        	Chat.userUsernameMap.put(user, newName);
+	        	// Change name in rooms
+	        	for(ChatRoom c : chat.getChatRooms()) {
+	        		List<String> newU = new ArrayList<String>();
+	        		if(c.getUsers().contains(sender)) {
+	        			for(String u : c.getUsers()) {
+	        				if(u.equals(sender) == false) {
+	        					newU.add(u);
+	        		        	chat = Chat.serverSaysToUser("Server", sender + " ahora se llama " + newName, chat, u);
+	        				}
+	        			}
+	        			newU.add(newName);
+	        			c.setUsers(newU); 	
+	        		}
+	        	}
+	        	chat = Chat.serverSaysToUser("Server", "Cambiado nombre a " + newName, chat, newName);
+        	} else {
+        		chat = Chat.serverSaysToUser("Server", "El nombre " + newName + " ya está en uso.", chat, sender);
         	}
-        	chat = Chat.serverSaysToUser("Server", "Cambiado nombre a " + newName, chat, newName);
         }
         else if(res.getSecond().equals("OKROOT")) {
         	chat = Chat.serverSaysToUser("Server", "Ahora eres todopoderoso.", chat, sender);

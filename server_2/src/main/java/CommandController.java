@@ -71,7 +71,7 @@ public class CommandController {
 				ok = "CLEAR";
 				break;
 			case "!CHANGENAME":
-				if(chat.getRoot().equals(sender)) {
+				if(chat.getRoot() != null && chat.getRoot().equals(sender)) {
 					ok = "ROOTNOCHANGE";
 				} else {
 					ok = "NAME" + "!" + parts[1];
@@ -95,8 +95,31 @@ public class CommandController {
 					ok = "BCASTNOROOT";
 				}
 				break;
+			case "!HELP":
+				ok = "HELP";
+				break;
 		}
 		return new Pair<ChatRoomsController, String>(chat,ok);
+	}
+	
+	
+	public String listCommands() {
+		
+		String list = "";
+		list += "!HELP to show available commands\n";
+		list += "!CREATEROOM <name> to create a new room\n";
+		list += "!JOINROOM <id> to join a new room\n";
+		list += "!LEAVEROOM to leave the current room\n";
+		list += "!AVAILABLEROOMS to list all public available rooms\n";
+		list += "!SEND <user> <msg> to send a message to a user\n";
+		list += "!CHATW <user> to start a chat wih a user without sending a message\n";
+		list += "!SENDR <msg> to send a message in a room\n";
+		list += "!CLEAR to clear messages in your screen\n";
+		list += "!CHANGENAME <name> to change your name\n";
+		list += "!SUPERUSER <password> to become the administrator\n";
+		list += "!BROADCAST <msg> to send a message to all users\n";
+		
+		return list;
 	}
 	
 	

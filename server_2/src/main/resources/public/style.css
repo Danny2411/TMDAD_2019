@@ -57,6 +57,7 @@ li {
 }
 
 #chat p {
+	white-space: pre-line;
     margin: 5px 0;
     font-weight: 300
 }
