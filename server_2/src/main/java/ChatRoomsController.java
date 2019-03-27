@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class ChatRoomsController {
@@ -56,7 +57,7 @@ public class ChatRoomsController {
 	}
 	
 	// Delete an existing room
-		public boolean deleteRoom(Long id, String user) {
+		public String deleteRoom(Long id, String user) {
 			int idx = -1;
 			for(int i = 0; i < chatRooms.size(); i++) {
 				if (chatRooms.get(i).getId() == id) {
@@ -65,15 +66,28 @@ public class ChatRoomsController {
 				}
 			}
 			if (idx >= 0) {
-				chatRooms.remove(idx);
-				return true;
+				if(chatRooms.get(idx).getCreator().equals(user)) {
+					String left = "KICK::";
+					List<String> aux_u = new ArrayList<String>(chatRooms.get(idx).getUsers());
+					Iterator<String> iter = aux_u.iterator();
+					while (iter.hasNext()) {
+					    String u = iter.next();
+					    chatRooms.get(idx).userLeaves(u);
+						left += "::" + u;
+					}
+					return left;
+				} else {
+					return "DELNOCREATOR";
+				}
+				
 			}
-			return false;
+			return "DELNOROOM";
 		}
 	
 	// Delete an existing room because it has no users
 	public boolean deleteRoomLeft(Long id) {
 		int idx = -1;
+		
 		for(int i = 0; i < chatRooms.size(); i++) {
 			if (chatRooms.get(i).getId() == id) {
 				idx = i;

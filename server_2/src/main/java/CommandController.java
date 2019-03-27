@@ -95,6 +95,9 @@ public class CommandController {
 					ok = "BCASTNOROOT";
 				}
 				break;
+			case "!DELETEROOM":
+				ok = chat.deleteRoom(Long.parseLong(parts[1]), sender);
+				break;
 			case "!HELP":
 				ok = "HELP";
 				break;
@@ -110,6 +113,7 @@ public class CommandController {
 		list += "!CREATEROOM <name> to create a new room\n";
 		list += "!JOINROOM <id> to join a new room\n";
 		list += "!LEAVEROOM to leave the current room\n";
+		list += "!DELETEROOM <id> to delete a room you created\n";
 		list += "!AVAILABLEROOMS to list all public available rooms\n";
 		list += "!SEND <user> <msg> to send a message to a user\n";
 		list += "!CHATW <user> to start a chat wih a user without sending a message\n";

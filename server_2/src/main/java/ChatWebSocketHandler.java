@@ -148,6 +148,19 @@ public class ChatWebSocketHandler {
         else if(res.getSecond().equals("BCASTNOROOT")) {
         	chat = Chat.serverSaysToUser("Server", "No puedes hacer broadcast sin privilegios.", chat, sender);
         }
+        else if(res.getSecond().equals("DELNOCREATOR")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes borrar la sala de otro.", chat, sender);
+        }
+        else if(res.getSecond().equals("DELNOROOM")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes borrar una sala inexistente.", chat, sender);
+        }
+        else if(res.getSecond().contains("KICK")) {
+        	String users = res.getSecond().replaceAll("KICK::", "");
+        	String[] us = users.split("::");
+        	for(String u : us) {
+            	chat = Chat.serverSaysToUser("Server", "Se ha eliminado la sala en la que estabas.", chat, u);
+        	}
+        }
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }
