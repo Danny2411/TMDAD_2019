@@ -48,25 +48,39 @@ public class CommandController {
 				if (crs.size() == 0) {
 					ok += "No hay salas disponibles.";
 				} else {
-					ok += "A continuación se mostrarán las salas disponibles." + ";";
+					ok += "A continuación se mostrarán las salas públicas disponibles." + ";";
 					for(ChatRoom c : crs) {
-						ok += "SALA " + c.getId() + ": " + c.getName() + ";";
+						if(c.getPriv() == false) {
+							ok += "SALA " + c.getId() + ": " + c.getName() + ";";
+						}
 					}
 				}
 				break;
 			case "!SEND":
 				// Check if user is on a private room with the other
-				String dest = parts[1];
-				String msg2 = parts[2];
-				ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
-				if(ok.contains("!")) {
-					ok += msg2;
+				try {
+					String dest = parts[1];
+					String msg2 = parts[2];
+					ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
+					if(ok.contains("!")) {
+						ok += msg2;
+					}
+					System.out.println("Trying to create room with " + parts[1]);
+				} catch (Exception e) {
+					ok = "BADARG";
 				}
+				break;
+			case "!CHATW":
+				// Check if user is on a private room with the other
+				String d2 = parts[1];
+				chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
+				ok = "JOINED";
 				System.out.println("Trying to create room with " + parts[1]);
 				break;
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];
 				break;
+				
 			case "!CLEAR":
 				ok = "CLEAR";
 				break;

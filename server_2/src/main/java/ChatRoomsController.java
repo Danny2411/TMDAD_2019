@@ -28,7 +28,7 @@ public class ChatRoomsController {
 	// Create a new private room for a 2-chat
 	public String createPrivateRoom(String name, String user1, String user2) {
 		ChatRoom c = isUserOnRoom(user1);
-		if(c != null && (c.getPriv() == false || (c.getPriv() == true && c.getAllowed() != user2) ) ) {
+		if(c != null && (c.getPriv() == false || (c.getPriv() == true && c.getAllowed().equals(user2)) ) ) {
 			return "YAENSALA";
 		} else if ((c != null && c.getPriv() == true && c.getUsers().contains(user1) && c.getAllowed().equals(user2)) ||
 				(c != null && c.getPriv() == true && c.getUsers().contains(user2) && c.getAllowed().equals(user1))) {
@@ -46,7 +46,7 @@ public class ChatRoomsController {
 			ChatRoom newRoom = new ChatRoom(lastId, name, user1, true, user2);
 			lastId += 1;
 			chatRooms.add(newRoom);
-			return "CLEAR::SENDMSGTOROOM" + "!";
+			return "SENDMSGTOROOM" + "!";
 		} else {
 			return "";
 		}

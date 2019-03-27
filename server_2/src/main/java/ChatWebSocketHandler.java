@@ -85,6 +85,9 @@ public class ChatWebSocketHandler {
         		chat = Chat.serverSaysToUser("Server", "Solo se puede abandonar una sala si estás dentro de ella.", chat, sender);
         	}
         } 
+        else if(res.getSecond().equals("BADARG")) {
+        	chat = Chat.serverSaysToUser("Server", "El mensaje no es correcto.", chat, sender);
+        }
         else if(res.getSecond().equals("CLEAR")) {
     		chat = Chat.serverSaysToUser("Server", "CLEAR CHATS", chat, sender);
         }
