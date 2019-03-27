@@ -13,6 +13,7 @@ public class ChatRoomsController {
 	}
 
 	private long lastId = 0;
+	private String currentRoot = null;
 	
 	// Create a new room
 	public boolean createRoom(String name, String user) {
@@ -129,6 +130,24 @@ public class ChatRoomsController {
 		}
 		return false;
 	}
+	
+	// Superuser
+	public String superUser(String password) {
+		// Check if password is OK
+		if(password.equals("TOOR")) {
+			return "OKROOT";
+		}
+		return "BADROOT";
+	}
+	
+	public void goRoot(String user) {
+		this.currentRoot = user;
+	}
+	
+	public String getRoot() {
+		return this.currentRoot;
+	}
+	
 	
 	
 }

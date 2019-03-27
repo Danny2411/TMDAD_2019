@@ -123,6 +123,22 @@ public class ChatWebSocketHandler {
         	}
         	chat = Chat.serverSaysToUser("Server", "Cambiado nombre a " + newName, chat, newName);
         }
+        else if(res.getSecond().equals("OKROOT")) {
+        	chat = Chat.serverSaysToUser("Server", "Ahora eres todopoderoso.", chat, sender);
+        }
+        else if(res.getSecond().equals("BADROOT")) {
+        	chat = Chat.serverSaysToUser("Server", "No tienes permisos. Se informará de esto.", chat, sender);
+        }
+        else if(res.getSecond().equals("ROOTNOCHANGE")) {
+        	chat = Chat.serverSaysToUser("Server", "El todopoderoso no debe cambiar de nombre.", chat, sender);
+        }
+        else if(res.getSecond().contains("BROADCAST!")) {
+        	String bcast_m = res.getSecond().replaceAll("BROADCAST!","");
+        	chat = Chat.broadcastMessage("El todopoderoso", bcast_m , chat);
+        }
+        else if(res.getSecond().equals("BCASTNOROOT")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes hacer broadcast sin privilegios.", chat, sender);
+        }
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }

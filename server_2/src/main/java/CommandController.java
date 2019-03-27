@@ -71,7 +71,29 @@ public class CommandController {
 				ok = "CLEAR";
 				break;
 			case "!CHANGENAME":
-				ok = "NAME" + "!" + parts[1];
+				if(chat.getRoot().equals(sender)) {
+					ok = "ROOTNOCHANGE";
+				} else {
+					ok = "NAME" + "!" + parts[1];
+				}
+				break;
+			case "!SUPERUSER":
+				try {
+					String pass = parts[1];
+					ok = chat.superUser(pass);
+					if(ok.equals("OKROOT")) {
+						chat.goRoot(sender);
+					} 
+				} catch (Exception e) {
+					ok = "BADARG";
+				}
+				break;
+			case "!BROADCAST":
+				if(sender.equals(chat.getRoot())) {
+					ok = "BROADCAST" + "!" + parts[1];
+				} else {
+					ok = "BCASTNOROOT";
+				}
 				break;
 		}
 		return new Pair<ChatRoomsController, String>(chat,ok);
