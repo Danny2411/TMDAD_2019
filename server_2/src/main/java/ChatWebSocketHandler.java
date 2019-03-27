@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jetty.websocket.api.*;
 import org.eclipse.jetty.websocket.api.annotations.*;
 
@@ -99,6 +102,26 @@ public class ChatWebSocketHandler {
         }
         else if(res.getSecond().equals("CLEAR")) {
     		chat = Chat.serverSaysToUser("Server", "CLEAR CHATS", chat, sender);
+        } 
+        else if(res.getSecond().contains("NAME!")) {
+        	String newName = res.getSecond().replaceAll("NAME!","");
+        	// Change name in user map
+        	Chat.userUsernameMap.put(user, newName);
+        	// Change name in rooms
+        	for(ChatRoom c : chat.getChatRooms()) {
+        		List<String> newU = new ArrayList<String>();
+        		if(c.getUsers().contains(sender)) {
+        			for(String u : c.getUsers()) {
+        				if(u.equals(sender) == false) {
+        					newU.add(u);
+        		        	chat = Chat.serverSaysToUser("Server", sender + " ahora se llama " + newName, chat, u);
+        				}
+        			}
+        			newU.add(newName);
+        			c.setUsers(newU); 	
+        		}
+        	}
+        	chat = Chat.serverSaysToUser("Server", "Cambiado nombre a " + newName, chat, newName);
         }
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);

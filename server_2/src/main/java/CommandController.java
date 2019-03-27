@@ -15,19 +15,6 @@ public class CommandController {
 					ok = "CREATED";
 				}
 				break;
-			case "!DELETEROOM" :
-				/*
-				System.out.println("Delete room: " + parts[1]);
-				boolean success = chat.deleteRoom(Long.parseLong(parts[1]));
-				if(!success) {
-					ok = "NOPOSIBLEBORRAR";
-				} else {
-					ok = "DELETED";
-				}
-				*/
-				break;
-			case "!INVITETOROOM" :
-				break;
 			case "!JOINROOM" :
 				System.out.println(sender + " joining room: " + parts[1]);
 				boolean success = chat.joinRoom(Long.parseLong(parts[1]), sender);
@@ -79,10 +66,12 @@ public class CommandController {
 				break;
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];
-				break;
-				
+				break;	
 			case "!CLEAR":
 				ok = "CLEAR";
+				break;
+			case "!CHANGENAME":
+				ok = "NAME" + "!" + parts[1];
 				break;
 		}
 		return new Pair<ChatRoomsController, String>(chat,ok);
