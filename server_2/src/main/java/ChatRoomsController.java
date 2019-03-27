@@ -21,6 +21,7 @@ public class ChatRoomsController {
 			return false;
 		}
 		ChatRoom newRoom = new ChatRoom(lastId, name, user);
+		newRoom.setCreator(user);
 		lastId += 1;
 		chatRooms.add(newRoom);
 		return true;
@@ -45,6 +46,7 @@ public class ChatRoomsController {
 			}
 			// If the other didnt created it, check if you are already in
 			ChatRoom newRoom = new ChatRoom(lastId, name, user1, true, user2);
+			newRoom.setCreator(user1);
 			lastId += 1;
 			chatRooms.add(newRoom);
 			return "SENDMSGTOROOM" + "!";
@@ -54,7 +56,23 @@ public class ChatRoomsController {
 	}
 	
 	// Delete an existing room
-	public boolean deleteRoom(Long id) {
+		public boolean deleteRoom(Long id, String user) {
+			int idx = -1;
+			for(int i = 0; i < chatRooms.size(); i++) {
+				if (chatRooms.get(i).getId() == id) {
+					idx = i;
+					break;
+				}
+			}
+			if (idx >= 0) {
+				chatRooms.remove(idx);
+				return true;
+			}
+			return false;
+		}
+	
+	// Delete an existing room because it has no users
+	public boolean deleteRoomLeft(Long id) {
 		int idx = -1;
 		for(int i = 0; i < chatRooms.size(); i++) {
 			if (chatRooms.get(i).getId() == id) {
@@ -123,7 +141,7 @@ public class ChatRoomsController {
 			if(onRoom) {
 				c.userLeaves(user);
 				if(c.getUsers().size() <= 0) {
-					deleteRoom(c.getId());
+					deleteRoomLeft(c.getId());
 				}
 				return true;
 			}

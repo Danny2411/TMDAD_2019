@@ -9,6 +9,7 @@ public class ChatRoom {
 	private List <String> messages;
 	private boolean priv = false;
 	private String allowed;
+	private String creator;
 	
 	// Constructor
 	public ChatRoom(long id, String name, String user) {
@@ -67,6 +68,12 @@ public class ChatRoom {
 	}
 	public void setAllowed(String allowed) {
 		this.allowed = allowed;
+	}
+	public String getCreator() {
+		return this.creator;
+	}
+	public void setCreator(String creator) {
+		this.creator = creator;
 	}
 	
 	// Modify room
