@@ -43,10 +43,15 @@ function updateChat(msg) {
     data.userlist.forEach(function (user) {
         insert("userlist", "<li>" + user + "</li>");
     });
+    
     id("currentchannel").innerHTML = "";
     insert("currentchannel", "<li>" + data.currentchannel + "</li>");
+    
     id("yourname").innerHTML = "";
     insert("yourname", "<li>" + data.yourname + "</li>");
+    
+    id("notificationlist").innerHTML = "";
+    insert("notificationlist", "<li>" + data.notificationlist + "</li>");
  
 }
 

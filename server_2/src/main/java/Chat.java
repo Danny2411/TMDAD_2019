@@ -15,6 +15,7 @@ public class Chat {
 
     // this map is shared between sessions and threads, so it needs to be thread-safe (http://stackoverflow.com/a/2688817)
     static Map<Session, String> userUsernameMap = new ConcurrentHashMap<>();
+    static Map<Session, String> notifications = new ConcurrentHashMap<>();
     static int nextUserNumber = 1; //Assign to username for next connecting user
     
     public static void main(String[] args) {
@@ -44,6 +45,7 @@ public class Chat {
                     .put("userlist", userUsernameMap.values())
                     .put("currentchannel", channel)
                     .put("yourname", userUsernameMap.get(session))
+                    .put("notificationlist", notifications.get(session))
                 ));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -74,7 +76,6 @@ public class Chat {
         	}
         }
         List<String> users = c.getUsers();
-        System.out.println( userUsernameMap.values());
         final ChatRoom current_c = c;
         String name = "";
         if(current_c.getPriv() == false) {
@@ -94,6 +95,7 @@ public class Chat {
 	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", final_name)
 	                    .put("yourname", userUsernameMap.get(session))
+	                    .put("notificationlist", notifications.get(session))
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -146,6 +148,7 @@ public class Chat {
 	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", ch)
 	                    .put("yourname", userUsernameMap.get(session))
+	                    .put("notificationlist", notifications.get(session))
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -196,6 +199,7 @@ public class Chat {
     	                    .put("userlist", userUsernameMap.values())
     	                    .put("currentchannel", ch)
     	                    .put("yourname", userUsernameMap.get(session))
+    	                    .put("notificationlist", notifications.get(session))
     	                ));
     	            } catch (Exception e) {
     	                e.printStackTrace();
@@ -210,6 +214,25 @@ public class Chat {
     	
     	return chat;
       
+    }
+    
+  //Sends a message from one user to all users, along with a list of current usernames
+    public static ChatRoomsController notify(String user, String message, ChatRoomsController chat) {
+        userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+       
+        	if(userUsernameMap.get(session).equals(user)) {
+        		try {
+                    session.getRemote().sendString(String.valueOf(new JSONObject()
+                        .put("notificationlist", notifications.get(session))
+                    ));
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+        	}
+ 
+        });
+        
+        return chat;
     }
 
 }

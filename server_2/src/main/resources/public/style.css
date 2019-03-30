@@ -67,6 +67,17 @@ li {
     top: 80px;
 }
 
+#notificationlist {
+	position: fixed;
+    left: 50%;
+    list-style: none;
+    margin-left: -430px;
+    background: #f0f0f9;
+    padding: 5px 10px;
+    max-width: 480px;
+    top: 80px;
+}
+
 #chat p {
 	white-space: pre-line;
     margin: 5px 0;
