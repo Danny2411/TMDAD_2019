@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -10,6 +11,9 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 
+import java.sql.*;
+import java.text.SimpleDateFormat;  
+
 @WebSocket
 public class ChatWebSocketHandler {
 
@@ -19,6 +23,7 @@ public class ChatWebSocketHandler {
     
     private final static String ENV_AMQPURL_NAME  = "amqp://iiilqiyz:IB5oVZP1FEUICOlk9jpf7LsDrFynH-wQ@raven.rmq.cloudamqp.com/iiilqiyz";
     private final static String TEST_QUEUE = "HOLA";
+    private static java.sql.Connection con;
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
@@ -26,6 +31,7 @@ public class ChatWebSocketHandler {
         Chat.userUsernameMap.put(user, username);
         Chat.notifications.put(user, "");
         chat = Chat.serverSaysToUser("Server", "Bienvenid@, " + username, chat, username);
+        con = DriverManager.getConnection( "jdbc:mysql://127.0.0.1:3306/tmdad","root","2411"); 
     }
 
     @OnWebSocketClose
@@ -46,10 +52,11 @@ public class ChatWebSocketHandler {
     }
 
     @OnWebSocketMessage
-    public void onMessage(Session user, String message) throws IOException, TimeoutException {
+    public void onMessage(Session user, String message) throws IOException, TimeoutException, SQLException {
         String sender = Chat.userUsernameMap.get(user);
         
         // RabbitMQ part
+        /*
         ConnectionFactory factory = new ConnectionFactory();
 		String amqpURL = ENV_AMQPURL_NAME != null ? ENV_AMQPURL_NAME : "amqp://localhost";
 		try {
@@ -76,7 +83,11 @@ public class ChatWebSocketHandler {
 		// Indicamos que no sea durable ni exclusiva
 		
 		channel.queueDeclare(TEST_QUEUE, false, false, false, null);
-
+		*/
+        
+        // MySQL part
+        
+        Statement stmt=con.createStatement();  
         
         Pair<ChatRoomsController, String> res = cmd.parseMessage(chat, message, sender);
         chat = res.getFirst();
@@ -112,9 +123,15 @@ public class ChatWebSocketHandler {
         	 }
         	 if(cr != null) {
         		 chat = Chat.sendMessageToChannel(sender, m.split("!")[1], cr.getId(), chat);
+        		 /*
         		 channel.basicPublish("", TEST_QUEUE, null, message.getBytes());
         		 channel.close();
         		 connection.close();
+        		 */
+        		 // Save to DB
+        		 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+        		 stmt.executeQuery("INSERT INTO mensajes (src_usr, dst_sala, type, text, timestamp) VALUES ('" 
+        				 	+ sender + "', '" + cr.getId() + "', 'text', '" + m.split("!")[1] + "', '" + timeStamp + "')"); 
         	 } else {
         		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
         	 }
