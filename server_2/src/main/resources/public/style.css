@@ -56,6 +56,17 @@ li {
     top: 11px;
 }
 
+#yourname {
+	position: fixed;
+    left: 50%;
+    list-style: none;
+    margin-left: -430px;
+    background: #f0f0f9;
+    padding: 5px 10px;
+    width: 150px;
+    top: 80px;
+}
+
 #chat p {
 	white-space: pre-line;
     margin: 5px 0;

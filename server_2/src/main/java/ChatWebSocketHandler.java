@@ -161,6 +161,9 @@ public class ChatWebSocketHandler {
             	chat = Chat.serverSaysToUser("Server", "Se ha eliminado la sala en la que estabas.", chat, u);
         	}
         }
+        else if(res.getSecond().equals("UPDATEUSERS")) {
+        	chat = Chat.serverSaysToUser("Server", "Actualizada lista de usuarios.", chat, sender);
+        }
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }

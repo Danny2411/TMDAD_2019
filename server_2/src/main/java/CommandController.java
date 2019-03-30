@@ -98,6 +98,9 @@ public class CommandController {
 			case "!DELETEROOM":
 				ok = chat.deleteRoom(Long.parseLong(parts[1]), sender);
 				break;
+			case "!UPDATEUSERS":
+				ok = "UPDATEUSERS";
+				break;
 			case "!HELP":
 				ok = "HELP";
 				break;
@@ -122,6 +125,7 @@ public class CommandController {
 		list += "!CHANGENAME <name> to change your name\n";
 		list += "!SUPERUSER <password> to become the administrator\n";
 		list += "!BROADCAST <msg> to send a message to all users\n";
+		list += "!UPDATEUSERS to check who is online\n";
 		
 		return list;
 	}

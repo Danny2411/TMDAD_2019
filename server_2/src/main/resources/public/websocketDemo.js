@@ -45,6 +45,8 @@ function updateChat(msg) {
     });
     id("currentchannel").innerHTML = "";
     insert("currentchannel", "<li>" + data.currentchannel + "</li>");
+    id("yourname").innerHTML = "";
+    insert("yourname", "<li>" + data.yourname + "</li>");
  
 }
 

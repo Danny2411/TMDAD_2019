@@ -43,6 +43,7 @@ public class Chat {
                     .put("userMessage", createHtmlMessageFromSender(sender, message))
                     .put("userlist", userUsernameMap.values())
                     .put("currentchannel", channel)
+                    .put("yourname", userUsernameMap.get(session))
                 ));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -92,6 +93,7 @@ public class Chat {
 	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
 	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", final_name)
+	                    .put("yourname", userUsernameMap.get(session))
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -143,6 +145,7 @@ public class Chat {
 	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
 	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", ch)
+	                    .put("yourname", userUsernameMap.get(session))
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -192,6 +195,7 @@ public class Chat {
     	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
     	                    .put("userlist", userUsernameMap.values())
     	                    .put("currentchannel", ch)
+    	                    .put("yourname", userUsernameMap.get(session))
     	                ));
     	            } catch (Exception e) {
     	                e.printStackTrace();
