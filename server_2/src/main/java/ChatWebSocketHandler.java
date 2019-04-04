@@ -12,6 +12,7 @@ import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Channel;
 
 import java.sql.*;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;  
 
 @WebSocket
@@ -31,7 +32,8 @@ public class ChatWebSocketHandler {
         Chat.userUsernameMap.put(user, username);
         Chat.notifications.put(user, "");
         chat = Chat.serverSaysToUser("Server", "Bienvenid@, " + username, chat, username);
-        con = DriverManager.getConnection( "jdbc:mysql://127.0.0.1:3306/tmdad","root","2411"); 
+        con = DriverManager.getConnection("jdbc:mysql://localhost/tmdad_schema?" +
+                "user=root&password=2411&serverTimezone=UTC");
     }
 
     @OnWebSocketClose
@@ -128,10 +130,11 @@ public class ChatWebSocketHandler {
         		 channel.close();
         		 connection.close();
         		 */
+        		 
         		 // Save to DB
-        		 String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
-        		 stmt.executeQuery("INSERT INTO mensajes (src_usr, dst_sala, type, text, timestamp) VALUES ('" 
-        				 	+ sender + "', '" + cr.getId() + "', 'text', '" + m.split("!")[1] + "', '" + timeStamp + "')"); 
+        		 java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
+        		 stmt.executeUpdate("INSERT INTO mensajes (src_usr, dst_sala, type, text, timestamp) VALUES ('" 
+        				 	+ sender + "', '" + cr.getId() + "', 'text', '" + m.split("!")[1] + "', '" + date + "')"); 
         	 } else {
         		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
         	 }
