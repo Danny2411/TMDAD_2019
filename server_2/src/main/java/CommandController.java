@@ -3,7 +3,7 @@ import java.util.List;
 
 public class CommandController {
 	
-	private DatabaseController db;
+	public DatabaseController db;
 	
 	public CommandController() {
 		db = new DatabaseController();
@@ -46,10 +46,17 @@ public class CommandController {
 						ok += ";" + mensaje;
 					}					
 					System.out.println(ok);
+					db.insertUserToDatabase(cr, sender);
 				}
 				break;
 			case "!LEAVEROOM" :
 				ok = "LEAVINGROOM";
+				// DATABASE
+				cr = chat.isUserOnRoom(sender);
+				if(cr.getUsers().size() <= 1) {
+					db.deleteRoom(cr);
+				}
+				db.removeUserFromRoom(sender);
 				break;
 			case "!AVAILABLEROOMS":
 				List<ChatRoom> crs = chat.availableRooms(sender);
@@ -73,6 +80,8 @@ public class CommandController {
 					ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
 					if(ok.contains("!")) {
 						ok += msg2;
+						cr = chat.isUserOnRoom(sender);
+						db.insertMsgToDatabase(sender, cr, parts[1]);
 					}
 				} catch (Exception e) {
 					ok = "BADARG";

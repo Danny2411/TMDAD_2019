@@ -94,4 +94,31 @@ public class DatabaseController {
 			return new ArrayList<String>();
 		}
 	}
+	
+	// Remove user from Room
+	public void removeUserFromRoom(String user) {
+		Statement stmt;
+		try {
+			stmt = con.createStatement();
+			stmt.executeUpdate("DELETE FROM usuarios WHERE nombre_usuario = '" + user + "'");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+	
+	// Remove data from Room
+	public void deleteRoom(ChatRoom cr) {
+		Statement stmt;
+		try {
+			stmt = con.createStatement();
+			stmt.executeUpdate("DELETE FROM mensajes WHERE dst_sala = " + cr.getId());
+			stmt = con.createStatement();
+			stmt.executeUpdate("DELETE FROM salas WHERE id_sala = " + cr.getId());
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }
