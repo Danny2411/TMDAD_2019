@@ -1,0 +1,1 @@
+truncate mensajes; truncate salas; truncate usuarios;

@@ -54,9 +54,12 @@ public class DatabaseController {
 	public int insertUserToDatabase(ChatRoom cr, String user) {
 		try {
 			Statement stmt = con.createStatement();  
-			
-			return stmt.executeUpdate("INSERT INTO usuarios (nombre_usuario, current_room_id) VALUES ('" 
-					 	+ user + "', " + cr.getId() + ")"); 
+			if (cr != null) {
+				return stmt.executeUpdate("UPDATE usuarios SET current_room_id = " + cr.getId() + " WHERE nombre_usuario = '" + user + "'");
+			} else {
+				return stmt.executeUpdate("INSERT INTO usuarios (nombre_usuario, current_room_id, is_root) VALUES ('" 
+					 	+ user + "', " + null + ", " + false + ")");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
@@ -96,11 +99,11 @@ public class DatabaseController {
 	}
 	
 	// Remove user from Room
-	public void removeUserFromRoom(String user) {
+	public void removeUserFromRoom(ChatRoom cr, String user) {
 		Statement stmt;
 		try {
 			stmt = con.createStatement();
-			stmt.executeUpdate("DELETE FROM usuarios WHERE nombre_usuario = '" + user + "'");
+			stmt.executeUpdate("UPDATE usuarios SET current_room_id = " + null + " WHERE id_sala = " + cr.getId());
 
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -116,6 +119,8 @@ public class DatabaseController {
 			stmt.executeUpdate("DELETE FROM mensajes WHERE dst_sala = " + cr.getId());
 			stmt = con.createStatement();
 			stmt.executeUpdate("DELETE FROM salas WHERE id_sala = " + cr.getId());
+			stmt = con.createStatement();
+			stmt.executeUpdate("UPDATE usuarios SET current_room_id = " + null + " WHERE current_room_id = " + cr.getId());
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -160,6 +165,22 @@ public class DatabaseController {
 		    stmt = con.createStatement();
 		    sql = "UPDATE mensajes SET src_usr = '" + new_name + "' WHERE src_usr = '" + original_name + "'";
 		    stmt.executeUpdate(sql);
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	// Update a name
+	public void setRoot(String user) {
+		try {
+			// Update usuario
+			Statement stmt = con.createStatement();
+		    String sql = "UPDATE usuarios SET is_root = " + true + " WHERE nombre_usuario = '" + user + "'";
+		    stmt.executeUpdate(sql);
+
 		
 		} catch (SQLException e) {
 			e.printStackTrace();

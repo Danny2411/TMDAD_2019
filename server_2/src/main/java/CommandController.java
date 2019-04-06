@@ -56,10 +56,10 @@ public class CommandController {
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
+				db.removeUserFromRoom(cr, sender);
 				if(cr.getUsers().size() <= 1) {
 					db.deleteRoom(cr);
 				}
-				db.removeUserFromRoom(sender);
 				break;
 			case "!AVAILABLEROOMS":
 				List<ChatRoom> crs = chat.availableRooms(sender);
@@ -132,6 +132,9 @@ public class CommandController {
 					ok = chat.superUser(pass);
 					if(ok.equals("OKROOT")) {
 						chat.goRoot(sender);
+						
+						// DATABASE
+						db.setRoot(sender);
 					} 
 				} catch (Exception e) {
 					ok = "BADARG";
@@ -145,7 +148,15 @@ public class CommandController {
 				}
 				break;
 			case "!DELETEROOM":
-				ok = chat.deleteRoom(Long.parseLong(parts[1]), sender);
+				cr = chat.isUserOnRoom(sender);
+				if(parts.length > 1) {
+					ok = chat.deleteRoom(Long.parseLong(parts[1]), sender);
+				} else {
+					ok = chat.deleteRoom(cr.getId(), sender);
+				}
+				
+				// DATABASE
+				db.deleteRoom(cr);
 				break;
 			case "!UPDATEUSERS":
 				ok = "UPDATEUSERS";
