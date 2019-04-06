@@ -50,6 +50,7 @@ public class ChatWebSocketHandler {
     			}
     		}
     	}
+    	cmd.db.disconnectUser(username);
     }
 
     @OnWebSocketMessage

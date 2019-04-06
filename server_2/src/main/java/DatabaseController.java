@@ -169,8 +169,6 @@ public class DatabaseController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
-		
 	}
 	
 	// Update a name
@@ -185,7 +183,17 @@ public class DatabaseController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	// User disconnects
+	public void disconnectUser(String user) {
+		try {
+			// Update usuario
+			Statement stmt = con.createStatement();
+			stmt.executeUpdate("DELETE FROM usuarios WHERE nombre_usuario = '" + user + "'");
 		
-		
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 }
