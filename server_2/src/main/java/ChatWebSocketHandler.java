@@ -24,7 +24,6 @@ public class ChatWebSocketHandler {
     
     private final static String ENV_AMQPURL_NAME  = "amqp://iiilqiyz:IB5oVZP1FEUICOlk9jpf7LsDrFynH-wQ@raven.rmq.cloudamqp.com/iiilqiyz";
     private final static String TEST_QUEUE = "HOLA";
-    private static java.sql.Connection con;
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
@@ -32,8 +31,6 @@ public class ChatWebSocketHandler {
         Chat.userUsernameMap.put(user, username);
         Chat.notifications.put(user, "");
         chat = Chat.serverSaysToUser("Server", "Bienvenid@, " + username, chat, username);
-        con = DriverManager.getConnection("jdbc:mysql://localhost/tmdad_schema?" +
-                "user=root&password=2411&serverTimezone=UTC");
     }
 
     @OnWebSocketClose
@@ -87,9 +84,8 @@ public class ChatWebSocketHandler {
 		channel.queueDeclare(TEST_QUEUE, false, false, false, null);
 		*/
         
-        // MySQL part
         
-        Statement stmt=con.createStatement();  
+       
         
         Pair<ChatRoomsController, String> res = cmd.parseMessage(chat, message, sender);
         chat = res.getFirst();
@@ -130,11 +126,6 @@ public class ChatWebSocketHandler {
         		 channel.close();
         		 connection.close();
         		 */
-        		 
-        		 // Save to DB
-        		 java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
-        		 stmt.executeUpdate("INSERT INTO mensajes (src_usr, dst_sala, type, text, timestamp) VALUES ('" 
-        				 	+ sender + "', '" + cr.getId() + "', 'text', '" + m.split("!")[1] + "', '" + date + "')"); 
         	 } else {
         		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
         	 }

@@ -1,6 +1,18 @@
+import java.sql.SQLException;
 import java.util.List;
 
 public class CommandController {
+	
+	private DatabaseController db;
+	
+	public CommandController() {
+		db = new DatabaseController();
+		try {
+			db.connectToDatabase();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public Pair<ChatRoomsController, String> parseMessage(ChatRoomsController chat, String msg, String sender) {
 		String[] parts = msg.split(" ");
@@ -13,6 +25,8 @@ public class CommandController {
 					ok = "YAENSALA";
 				} else {
 					ok = "CREATED";
+					// DATABASE
+					db.insertCRToDatabase(chat.isUserOnRoom(sender));
 				}
 				break;
 			case "!JOINROOM" :
@@ -66,6 +80,9 @@ public class CommandController {
 				break;
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];
+				// DATABASE
+				ChatRoom cr = chat.isUserOnRoom(sender);
+				db.insertMsgToDatabase(sender, cr, parts[1]);
 				break;	
 			case "!CLEAR":
 				ok = "CLEAR";
