@@ -48,10 +48,11 @@ public class CommandController {
 					List<String> mensajes = db.getMessagesFromRoom(cr);
 					for(String mensaje : mensajes) {
 						// CENSOR
-						Pair<String, List<String>> res = cs.censorMessage(mensaje);
-						System.out.println("Censurado: " + res.getSecond());
-						
-						ok += ";" + res.getFirst();
+						Pair<String, List<String>> c_res = cs.censorMessage(mensaje);
+						if(c_res.getSecond().size() > 0) {
+							db.saveCensor(mensaje, c_res.getSecond(), sender, cr);
+						}					
+						ok += ";" + c_res.getFirst();
 					}					
 					System.out.println(ok);
 					db.insertUserToDatabase(cr, sender);
@@ -85,14 +86,24 @@ public class CommandController {
 				// Check if user is on a private room with the other
 				try {
 					String dest = parts[1];
-					String msg2 = parts[2];
+					String msg2 = "";
+					// Join messages from spaces
+					if(parts.length > 2) {
+						String m = "";
+						for(int i = 2; i < parts.length; i++) {
+							m += parts[i] + " ";
+						}
+						msg2 = m;
+					}
 					ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
 					if(ok.contains("!")) {
 						// CENSOR
-						Pair<String, List<String>> res = cs.censorMessage(msg2);
-						System.out.println("Censurado: " + res.getSecond());
+						Pair<String, List<String>> c_res = cs.censorMessage(msg2);
+						if(c_res.getSecond().size() > 0) {
+							db.saveCensor(msg2, c_res.getSecond(), sender, chat.isUserOnRoom(sender));
+						}
 						
-						ok += res.getFirst();
+						ok += c_res.getFirst();
 					
 						// DATABASE
 						cr = chat.isUserOnRoom(sender);
@@ -117,9 +128,24 @@ public class CommandController {
 				System.out.println(ok);
 				break;
 			case "!SENDR":
-				Pair<String, List<String>> res = cs.censorMessage(parts[1]);
-				System.out.println("Censurado: " + res.getSecond());
-				ok = "SENDMSGTOROOM" + "!" + res.getFirst();
+				
+				String msg2 = "";
+				// Join messages from spaces
+				if(parts.length > 1) {
+					String m = "";
+					for(int i = 1; i < parts.length; i++) {
+						m += parts[i] + " ";
+					}
+					msg2 = m;
+				}
+				
+				// CENSOR
+				Pair<String, List<String>> c_res = cs.censorMessage(msg2);
+				if(c_res.getSecond().size() > 0) {
+					db.saveCensor(msg2, c_res.getSecond(), sender, chat.isUserOnRoom(sender));
+				}
+				
+				ok = "SENDMSGTOROOM" + "!" + c_res.getFirst();
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);

@@ -15,15 +15,16 @@ public class CensuraController {
 	}
 	
 	public Pair<String, List<String>> censorMessage(String msg){
-		Pair<String, List<String>> result = null;
 		List<String> censoredWords = new ArrayList<String>();
+		String new_msg = msg;
 		for(String c : censoredStrings) {
-			if(msg.contains(c)) {
-				msg = msg.replaceAll(c, "****");
+			if(new_msg.contains(c)) {
+				new_msg = new_msg.replaceAll(c, "****");
 				censoredWords.add(c);
 			}
 		}
-		return new Pair<String, List<String>>(msg, censoredWords);
+		System.out.println(new_msg);
+		return new Pair<String, List<String>>(new_msg, censoredWords);
 	}
 	
 	

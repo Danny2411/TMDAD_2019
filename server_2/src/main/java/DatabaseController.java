@@ -196,4 +196,30 @@ public class DatabaseController {
 			e.printStackTrace();
 		}
 	}
+	
+	// Save censored words to DDBB
+	public int saveCensor(String msg, List<String> words, String sender, ChatRoom cr) {
+		
+		try {
+			Statement stmt = con.createStatement();  
+			String w = "";
+			for(String s : words) {
+				w += s + ",";
+			}
+			w = w.substring(0, w.length() - 1);
+			
+			Long id = null;
+			if (cr != null){
+				id = cr.getId();
+			}
+			java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
+			return stmt.executeUpdate("INSERT INTO mensajes_censurados (src_usr, dst_sala, text, censored_words, timestamp) VALUES ('" 
+					 	+ sender + "', " + id + ", '" + msg + "', '" + w + "', '" + date + "')");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
+		
+	}
 }
