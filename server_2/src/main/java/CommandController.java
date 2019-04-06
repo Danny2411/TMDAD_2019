@@ -17,6 +17,7 @@ public class CommandController {
 	public Pair<ChatRoomsController, String> parseMessage(ChatRoomsController chat, String msg, String sender) {
 		String[] parts = msg.split(" ");
 		String ok = "";
+		ChatRoom cr = null;
 		switch(parts[0]) {
 			case "!CREATEROOM" :
 				System.out.println("Create room: " + parts[1]);
@@ -26,7 +27,7 @@ public class CommandController {
 				} else {
 					ok = "CREATED";
 					// DATABASE
-					ChatRoom cr = chat.isUserOnRoom(sender);
+					cr = chat.isUserOnRoom(sender);
 					db.insertCRToDatabase(cr);
 					db.insertUserToDatabase(cr, sender);
 				}
@@ -39,7 +40,7 @@ public class CommandController {
 				} else {
 					ok = "JOINED";
 					// DATABASE
-					ChatRoom cr = chat.isUserOnRoom(sender);
+					cr = chat.isUserOnRoom(sender);
 					List<String> mensajes = db.getMessagesFromRoom(cr);
 					for(String mensaje : mensajes) {
 						ok += ";" + mensaje;
@@ -82,11 +83,18 @@ public class CommandController {
 				String d2 = parts[1];
 				chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
 				ok = "JOINED";
+				// DATABASE
+				cr = chat.isUserOnRoom(sender);
+				List<String> mensajes = db.getMessagesFromRoom(cr);
+				for(String mensaje : mensajes) {
+					ok += ";" + mensaje;
+				}					
+				System.out.println(ok);
 				break;
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];
 				// DATABASE
-				ChatRoom cr = chat.isUserOnRoom(sender);
+				cr = chat.isUserOnRoom(sender);
 				db.insertMsgToDatabase(sender, cr, parts[1]);
 				break;	
 			case "!CLEAR":
