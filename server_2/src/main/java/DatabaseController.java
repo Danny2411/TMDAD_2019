@@ -121,4 +121,27 @@ public class DatabaseController {
 		}
 		
 	}
+	
+	// Get first available room ID
+	public long getLastIdx() {
+		try {
+			
+		    Statement stmt = con.createStatement();
+		    String sql = "SELECT MAX(id_sala) as maxid FROM salas";
+		    ResultSet rs = stmt.executeQuery(sql);
+		    int max = 0;
+		    
+		    if(rs.next()){ 
+		         max = rs.getInt("maxid");
+		    }
+		    rs.close();
+		    return max + 1;
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
+		
+		
+	}
 }

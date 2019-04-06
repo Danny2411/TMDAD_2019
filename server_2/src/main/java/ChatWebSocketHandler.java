@@ -31,6 +31,7 @@ public class ChatWebSocketHandler {
         Chat.userUsernameMap.put(user, username);
         Chat.notifications.put(user, "");
         chat = Chat.serverSaysToUser("Server", "Bienvenid@, " + username, chat, username);
+        chat.setLastId(cmd.db.getLastIdx());
     }
 
     @OnWebSocketClose

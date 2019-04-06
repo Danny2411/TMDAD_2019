@@ -4,7 +4,17 @@ import java.util.List;
 
 public class ChatRoomsController {
 
-	private List<ChatRoom> chatRooms = new ArrayList<ChatRoom>();
+	private List<ChatRoom> chatRooms = new ArrayList<ChatRoom>();	
+	
+	private long lastId = 0;
+	public long getLastId() {
+		return lastId;
+	}
+
+	public void setLastId(long lastId) {
+		this.lastId = lastId;
+	}
+
 	public List<ChatRoom> getChatRooms() {
 		return chatRooms;
 	}
@@ -12,8 +22,7 @@ public class ChatRoomsController {
 	public void setChatRooms(List<ChatRoom> chatRooms) {
 		this.chatRooms = chatRooms;
 	}
-
-	private long lastId = 0;
+	
 	private String currentRoot = null;
 	
 	// Create a new room
