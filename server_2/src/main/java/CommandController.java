@@ -4,9 +4,11 @@ import java.util.List;
 public class CommandController {
 	
 	public DatabaseController db;
+	public CensuraController cs;
 	
 	public CommandController() {
 		db = new DatabaseController();
+		cs = new CensuraController();
 		try {
 			db.connectToDatabase();
 		} catch (SQLException e) {
@@ -45,7 +47,11 @@ public class CommandController {
 					cr = chat.isUserOnRoom(sender);
 					List<String> mensajes = db.getMessagesFromRoom(cr);
 					for(String mensaje : mensajes) {
-						ok += ";" + mensaje;
+						// CENSOR
+						Pair<String, List<String>> res = cs.censorMessage(mensaje);
+						System.out.println("Censurado: " + res.getSecond());
+						
+						ok += ";" + res.getFirst();
 					}					
 					System.out.println(ok);
 					db.insertUserToDatabase(cr, sender);
@@ -82,8 +88,12 @@ public class CommandController {
 					String msg2 = parts[2];
 					ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
 					if(ok.contains("!")) {
-						ok += msg2;
+						// CENSOR
+						Pair<String, List<String>> res = cs.censorMessage(msg2);
+						System.out.println("Censurado: " + res.getSecond());
 						
+						ok += res.getFirst();
+					
 						// DATABASE
 						cr = chat.isUserOnRoom(sender);
 						db.insertMsgToDatabase(sender, cr, parts[1]);
@@ -107,7 +117,9 @@ public class CommandController {
 				System.out.println(ok);
 				break;
 			case "!SENDR":
-				ok = "SENDMSGTOROOM" + "!" + parts[1];
+				Pair<String, List<String>> res = cs.censorMessage(parts[1]);
+				System.out.println("Censurado: " + res.getSecond());
+				ok = "SENDMSGTOROOM" + "!" + res.getFirst();
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
