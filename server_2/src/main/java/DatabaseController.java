@@ -129,7 +129,7 @@ public class DatabaseController {
 		    Statement stmt = con.createStatement();
 		    String sql = "SELECT MAX(id_sala) as maxid FROM salas";
 		    ResultSet rs = stmt.executeQuery(sql);
-		    int max = 0;
+		    int max = -1;
 		    
 		    if(rs.next()){ 
 		         max = rs.getInt("maxid");
@@ -140,6 +140,29 @@ public class DatabaseController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
+		}
+		
+		
+	}
+	
+	// Update a name
+	public void updateName(String original_name, String new_name) {
+		try {
+			// Update usuario
+			Statement stmt = con.createStatement();
+		    String sql = "UPDATE usuarios SET nombre_usuario = '" + new_name + "' WHERE nombre_usuario = '" + original_name + "'";
+		    stmt.executeUpdate(sql);
+		    // Update room
+		    stmt = con.createStatement();
+		    sql = "UPDATE salas SET creator = '" + new_name + "' WHERE creator = '" + original_name + "'";
+		    stmt.executeUpdate(sql);
+		    // Update room
+		    stmt = con.createStatement();
+		    sql = "UPDATE mensajes SET src_usr = '" + new_name + "' WHERE src_usr = '" + original_name + "'";
+		    stmt.executeUpdate(sql);
+		
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 		
 		

@@ -26,6 +26,7 @@ public class CommandController {
 					ok = "YAENSALA";
 				} else {
 					ok = "CREATED";
+					
 					// DATABASE
 					cr = chat.isUserOnRoom(sender);
 					db.insertCRToDatabase(cr);
@@ -39,6 +40,7 @@ public class CommandController {
 					ok = "NOJOIN";
 				} else {
 					ok = "JOINED";
+					
 					// DATABASE
 					cr = chat.isUserOnRoom(sender);
 					List<String> mensajes = db.getMessagesFromRoom(cr);
@@ -51,6 +53,7 @@ public class CommandController {
 				break;
 			case "!LEAVEROOM" :
 				ok = "LEAVINGROOM";
+				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
 				if(cr.getUsers().size() <= 1) {
@@ -80,6 +83,8 @@ public class CommandController {
 					ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
 					if(ok.contains("!")) {
 						ok += msg2;
+						
+						// DATABASE
 						cr = chat.isUserOnRoom(sender);
 						db.insertMsgToDatabase(sender, cr, parts[1]);
 					}
@@ -92,6 +97,7 @@ public class CommandController {
 				String d2 = parts[1];
 				chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
 				ok = "JOINED";
+				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
 				List<String> mensajes = db.getMessagesFromRoom(cr);
@@ -102,6 +108,7 @@ public class CommandController {
 				break;
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];
+				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
 				db.insertMsgToDatabase(sender, cr, parts[1]);
@@ -114,6 +121,9 @@ public class CommandController {
 					ok = "ROOTNOCHANGE";
 				} else {
 					ok = "NAME" + "!" + parts[1];
+					
+					// DATABASE
+					db.updateName(sender, parts[1]);
 				}
 				break;
 			case "!SUPERUSER":
