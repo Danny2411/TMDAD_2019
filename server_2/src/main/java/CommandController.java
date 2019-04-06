@@ -26,7 +26,9 @@ public class CommandController {
 				} else {
 					ok = "CREATED";
 					// DATABASE
-					db.insertCRToDatabase(chat.isUserOnRoom(sender));
+					ChatRoom cr = chat.isUserOnRoom(sender);
+					db.insertCRToDatabase(cr);
+					db.insertUserToDatabase(cr, sender);
 				}
 				break;
 			case "!JOINROOM" :
@@ -36,14 +38,19 @@ public class CommandController {
 					ok = "NOJOIN";
 				} else {
 					ok = "JOINED";
+					// DATABASE
+					ChatRoom cr = chat.isUserOnRoom(sender);
+					List<String> mensajes = db.getMessagesFromRoom(cr);
+					for(String mensaje : mensajes) {
+						ok += ";" + mensaje;
+					}					
+					System.out.println(ok);
 				}
 				break;
 			case "!LEAVEROOM" :
-				System.out.println(sender + " leaving room");
 				ok = "LEAVINGROOM";
 				break;
 			case "!AVAILABLEROOMS":
-				System.out.println("Listing available rooms");
 				List<ChatRoom> crs = chat.availableRooms(sender);
 				ok += "CHATROOMS" + "!";
 				if (crs.size() == 0) {
@@ -66,7 +73,6 @@ public class CommandController {
 					if(ok.contains("!")) {
 						ok += msg2;
 					}
-					System.out.println("Trying to create room with " + parts[1]);
 				} catch (Exception e) {
 					ok = "BADARG";
 				}
@@ -76,7 +82,6 @@ public class CommandController {
 				String d2 = parts[1];
 				chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
 				ok = "JOINED";
-				System.out.println("Trying to create room with " + parts[1]);
 				break;
 			case "!SENDR":
 				ok = "SENDMSGTOROOM" + "!" + parts[1];

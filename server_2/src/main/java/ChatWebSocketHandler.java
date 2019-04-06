@@ -111,6 +111,15 @@ public class ChatWebSocketHandler {
         			chat = Chat.serverSaysToUser("Server", sender + " se ha unido a la sala." , chat, u);
         		}
         	}
+        	if(res.getSecond().contains(";")) {
+        		String[] pendingMsg = res.getSecond().split(";");
+        		for (int i = 1; i < pendingMsg.length; i++) {
+        			String[] m = pendingMsg[i].split("!");
+        			String orig_sender = m[0];
+        			String orig_msg = m[1];
+                	chat = Chat.recoverMessages(orig_sender, orig_msg, chat, sender, cr);
+        		}
+        	}
         }  
         else if(res.getSecond().contains("SENDMSGTOROOM")) {
         	 ChatRoom cr = chat.isUserOnRoom(sender);

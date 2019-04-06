@@ -217,6 +217,38 @@ public class Chat {
     }
     
   //Sends a message from one user to all users, along with a list of current usernames
+    public static ChatRoomsController recoverMessages(String sender, String msg, ChatRoomsController chat, String user, ChatRoom cr) {
+    	
+    	
+        
+    	String ch = cr.getName();
+    	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+    		String u = userUsernameMap.get(session);
+    		if (user.equals(u)) {
+    			 try {
+	                session.getRemote().sendString(String.valueOf(new JSONObject()
+	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
+	                    .put("userlist", userUsernameMap.values())
+	                    .put("currentchannel", ch)
+	                    .put("yourname", userUsernameMap.get(session))
+	                    .put("notificationlist", notifications.get(session))
+	                ));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+    		}
+
+        });
+        	
+        
+ 
+        
+    	
+    	return chat;
+      
+    }
+    
+  //Sends a message from one user to all users, along with a list of current usernames
     public static ChatRoomsController notify(String user, String message, ChatRoomsController chat) {
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
        
