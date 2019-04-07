@@ -104,7 +104,7 @@ public class CommandController {
 					
 						// DATABASE
 						cr = chat.isUserOnRoom(sender);
-						db.insertMsgToDatabase(sender, cr, parts[1]);
+						db.insertMsgToDatabase(sender, cr, msg2);
 					}
 				} catch (Exception e) {
 					ok = "BADARG";
@@ -147,7 +147,7 @@ public class CommandController {
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
-				db.insertMsgToDatabase(sender, cr, parts[1]);
+				db.insertMsgToDatabase(sender, cr, msg2);
 				break;	
 			case "!CLEAR":
 				ok = "CLEAR";

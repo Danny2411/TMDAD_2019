@@ -113,7 +113,7 @@ public class DatabaseController {
 		Statement stmt;
 		try {
 			stmt = con.createStatement();
-			stmt.executeUpdate("UPDATE usuarios SET current_room_id = " + null + " WHERE id_sala = " + cr.getId());
+			stmt.executeUpdate("UPDATE usuarios SET current_room_id = " + null + " WHERE current_room_id = " + cr.getId());
 
 		} catch (SQLException e) {
 			e.printStackTrace();
