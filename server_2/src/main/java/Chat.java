@@ -115,11 +115,8 @@ public class Chat {
     	List<ChatRoom> cr = chat.getChatRooms();
         for(int i = 0; i < cr.size(); i++ ) {
         	for(String uir : cr.get(i).getUsers()) {
-        		System.out.println(uir);
-        		System.out.println(user);
         		if(uir.equals(user)) {
         			c = cr.get(i);
-        			System.out.println("FOUND");
             		break;
         		}
         	}
@@ -135,9 +132,7 @@ public class Chat {
         } else {
         	currentchannel = "No channel";
         }
-        System.out.println(currentchannel);
         final String ch = currentchannel;
-        System.out.println(ch);
         
     	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
     		String u = userUsernameMap.get(session);
@@ -168,11 +163,8 @@ public class Chat {
     	List<ChatRoom> cr = chat.getChatRooms();
         for(int i = 0; i < cr.size(); i++ ) {
         	for(String uir : cr.get(i).getUsers()) {
-        		System.out.println(uir);
-        		System.out.println(user);
         		if(uir.equals(user)) {
         			c = cr.get(i);
-        			System.out.println("FOUND");
             		break;
         		}
         	}

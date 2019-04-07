@@ -30,11 +30,14 @@ public class ChatWebSocketHandler {
     public void onConnect(Session user) throws Exception {
     	String req = user.getUpgradeRequest().getRequestURI().toString();
     	String username = "";
+    	boolean informaCambioNombre = false;
     	if(req.contains("?u=")) {
     		req = req.substring(req.indexOf('=') + 1);
     		if(Chat.userUsernameMap.containsValue(req)){
     			username = "User" + Chat.nextUserNumber++;
+    			informaCambioNombre = true;
     		} else {
+    			// Debería entrar siempre aquí por como funciona JS
     			username = req;
     		}
     	} else {
@@ -44,8 +47,17 @@ public class ChatWebSocketHandler {
         Chat.userUsernameMap.put(user, username);
         Chat.notifications.put(user, "");
         chat = Chat.serverSaysToUser("Server", "Bienvenid@, " + username, chat, username);
+        if(informaCambioNombre) {
+            chat = Chat.serverSaysToUser("Server", "Se te ha asignado el nombre " + username + " por duplicidad.", chat, username);
+        }
         chat.setLastId(cmd.db.getLastIdx());
+        // Insert user to Database
         cmd.db.insertUserToDatabase(null, username);
+        // Get unread messages
+        List<String> pending = cmd.db.checkRoomsWithMessages(username);
+        for(String s : pending) {
+        	chat = Chat.serverSaysToUser("Server", "Tienes mensajes disponibles en la sala de ID = " + s + ".", chat, username);
+        }
     }
 
     @OnWebSocketClose

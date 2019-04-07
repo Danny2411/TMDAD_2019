@@ -23,6 +23,7 @@ public class ChatRoomsController {
 		this.chatRooms = chatRooms;
 	}
 	
+	
 	private String currentRoot = null;
 	
 	// Create a new room
@@ -45,6 +46,7 @@ public class ChatRoomsController {
 		} else if ((c != null && c.getPriv() == true && c.getUsers().contains(user1) && c.getAllowed().equals(user2)) ||
 				(c != null && c.getPriv() == true && c.getUsers().contains(user2) && c.getAllowed().equals(user1))) {
 			// ya está donde debe estar
+			lastId += 1;
 			return "SENDMSGTOROOM" + "!";
 		} else if (c == null) {
 			// Check if the other user already created 
@@ -64,6 +66,7 @@ public class ChatRoomsController {
 			return "";
 		}
 	}
+
 	
 	// Delete an existing room
 		public String deleteRoom(Long id, String user) {
@@ -141,7 +144,6 @@ public class ChatRoomsController {
 	
 	// Check if a user is on a room
 	public ChatRoom isUserOnRoom(String user) {
-		System.out.println("Checking : " + user);
 		for (ChatRoom c : chatRooms) {
 			for(String u : c.getUsers()) {
 				if(u.equals(user)){

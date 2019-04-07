@@ -40,10 +40,20 @@ public class DatabaseController {
 	// Save a CR to DDBB
 	public int insertCRToDatabase(ChatRoom cr) {
 		try {
-			Statement stmt = con.createStatement();  
 			
-			return stmt.executeUpdate("INSERT INTO salas (id_sala, nombre_sala, creator, private, allowed) VALUES (" 
-					 	+ cr.getId() + ", '" + cr.getName() + "', '" + cr.getCreator() + "', " + cr.getPriv() + ", '" + cr.getAllowed() + "')"); 
+			Statement stmt_2 = con.createStatement();
+			
+			 String sql_2 = "SELECT DISTINCT id_sala FROM salas s WHERE s.id_sala = " + cr.getId();
+			 ResultSet rs_2 = stmt_2.executeQuery(sql_2);
+	         
+	         if (!rs_2.next()) {
+		        
+				Statement stmt = con.createStatement();  
+				
+				return stmt.executeUpdate("INSERT INTO salas (id_sala, nombre_sala, creator, private, allowed) VALUES (" 
+						 	+ cr.getId() + ", '" + cr.getName() + "', '" + cr.getCreator() + "', " + cr.getPriv() + ", '" + cr.getAllowed() + "')"); 
+	         }
+	         return -1;
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;
@@ -221,5 +231,39 @@ public class DatabaseController {
 			return -1;
 		}
 		
+	}
+	
+	// Check pending messages when connecting
+	public List<String> checkRoomsWithMessages(String username){
+		List<String> mensajes = new ArrayList<String>();
+		try {
+		
+			// Check available room IDs
+			
+			Statement stmt = con.createStatement();
+			
+		    String sql = "SELECT DISTINCT id_sala FROM salas s WHERE s.allowed = '" + username + "' and s.private = " + true;
+		    ResultSet rs = stmt.executeQuery(sql);
+		    
+		    while(rs.next()){
+		         
+		         int id  = rs.getInt("id_sala");
+		         
+		         Statement stmt_2 = con.createStatement();
+					
+				 String sql_2 = "SELECT DISTINCT dst_sala FROM mensajes m WHERE m.dst_sala = " + id;
+				 ResultSet rs_2 = stmt_2.executeQuery(sql_2);
+		         
+		         if(rs_2.next()) {
+			         mensajes.add(Integer.toString(id));
+		         }
+
+		      }
+		      rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
+		return mensajes;
 	}
 }

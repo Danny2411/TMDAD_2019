@@ -22,7 +22,6 @@ public class CommandController {
 		ChatRoom cr = null;
 		switch(parts[0]) {
 			case "!CREATEROOM" :
-				System.out.println("Create room: " + parts[1]);
 				boolean possible = chat.createRoom(parts[1], sender);
 				if(!possible) {
 					ok = "YAENSALA";
@@ -36,7 +35,6 @@ public class CommandController {
 				}
 				break;
 			case "!JOINROOM" :
-				System.out.println(sender + " joining room: " + parts[1]);
 				boolean success = chat.joinRoom(Long.parseLong(parts[1]), sender);
 				if(!success) {
 					ok = "NOJOIN";
@@ -54,7 +52,6 @@ public class CommandController {
 						}					
 						ok += ";" + c_res.getFirst();
 					}					
-					System.out.println(ok);
 					db.insertUserToDatabase(cr, sender);
 				}
 				break;
@@ -116,7 +113,8 @@ public class CommandController {
 			case "!CHATW":
 				// Check if user is on a private room with the other
 				String d2 = parts[1];
-				chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
+				String res = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
+				
 				ok = "JOINED";
 				
 				// DATABASE
@@ -124,8 +122,8 @@ public class CommandController {
 				List<String> mensajes = db.getMessagesFromRoom(cr);
 				for(String mensaje : mensajes) {
 					ok += ";" + mensaje;
-				}					
-				System.out.println(ok);
+				}		
+				db.insertCRToDatabase(cr);
 				break;
 			case "!SENDR":
 				
