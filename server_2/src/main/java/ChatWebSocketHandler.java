@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 import org.eclipse.jetty.websocket.api.*;
@@ -27,7 +28,19 @@ public class ChatWebSocketHandler {
 
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
-        String username = "User" + Chat.nextUserNumber++;
+    	String req = user.getUpgradeRequest().getRequestURI().toString();
+    	String username = "";
+    	if(req.contains("?u=")) {
+    		req = req.substring(req.indexOf('=') + 1);
+    		if(Chat.userUsernameMap.containsValue(req)){
+    			username = "User" + Chat.nextUserNumber++;
+    		} else {
+    			username = req;
+    		}
+    	} else {
+    		username = "User" + Chat.nextUserNumber++;
+    	} 	
+    
         Chat.userUsernameMap.put(user, username);
         Chat.notifications.put(user, "");
         chat = Chat.serverSaysToUser("Server", "Bienvenid@, " + username, chat, username);
