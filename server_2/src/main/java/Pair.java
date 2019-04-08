@@ -1,4 +1,4 @@
-
+// This class is used to return two values from the same function
 public class Pair<U, V> {
 
 	/**

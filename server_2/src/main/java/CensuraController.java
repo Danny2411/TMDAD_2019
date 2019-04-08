@@ -1,8 +1,10 @@
 import java.util.ArrayList;
 import java.util.List;
 
+// Class to check how to censor words
 public class CensuraController {
 
+	// List to keep strings that must be cesnored
 	List<String> censoredStrings;
 	
 	public CensuraController() {
@@ -14,6 +16,8 @@ public class CensuraController {
 		censoredStrings = c;
 	}
 	
+	// Check if a message has anything to be censored.
+	// Replace censored words with **** and return which words were censored
 	public Pair<String, List<String>> censorMessage(String msg){
 		List<String> censoredWords = new ArrayList<String>();
 		String new_msg = msg;
@@ -23,7 +27,6 @@ public class CensuraController {
 				censoredWords.add(c);
 			}
 		}
-		System.out.println(new_msg);
 		return new Pair<String, List<String>>(new_msg, censoredWords);
 	}
 	

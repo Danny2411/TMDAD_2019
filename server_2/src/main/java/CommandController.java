@@ -2,10 +2,11 @@ import java.sql.SQLException;
 import java.util.List;
 
 public class CommandController {
-	
+	// Database controller
 	public DatabaseController db;
+	// Censor controller
 	public CensuraController cs;
-	
+	// Command controller itself
 	public CommandController() {
 		db = new DatabaseController();
 		cs = new CensuraController();
@@ -15,7 +16,7 @@ public class CommandController {
 			e.printStackTrace();
 		}
 	}
-
+	// Parse received messages
 	public Pair<ChatRoomsController, String> parseMessage(ChatRoomsController chat, String msg, String sender) {
 		String[] parts = msg.split(" ");
 		String ok = "";
