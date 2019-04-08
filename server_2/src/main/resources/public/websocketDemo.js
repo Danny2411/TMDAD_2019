@@ -13,6 +13,11 @@ id("message").addEventListener("keypress", function (e) {
     if (e.keyCode === 13) { sendMessage(e.target.value); }
 });
 
+//Send file if "Upload" is clicked
+id("upload").addEventListener("click", function () {
+    sendFile();
+});
+
 //Send a message if it's not empty, then clear the input field
 function sendMessage(message) {
     if (message !== "") {
@@ -57,22 +62,17 @@ function updateChat(msg) {
 
 // Send file function
 function sendFile() {
-    var file = document.getElementById('filename').files[0];
-    ws.send('filename:'+file.name);
-    var reader = new FileReader();
+	var file = document.getElementById('filename').files[0];
+	var reader = new FileReader();
     var rawData = new ArrayBuffer();            
-    //alert(file.name);
-
     reader.loadend = function() {
-
+    
     }
     reader.onload = function(e) {
         rawData = e.target.result;
-        ws.send(rawData);
-        alert("the File has been transferred.")
-        ws.send('end');
+        webSocket.send(rawData);
+		webSocket.send("!FILE:" + file.name);
     }
-
     reader.readAsArrayBuffer(file);
 }
 

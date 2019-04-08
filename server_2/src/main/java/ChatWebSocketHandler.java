@@ -1,4 +1,5 @@
 import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -22,6 +23,7 @@ public class ChatWebSocketHandler {
     private String sender, msg;
     private CommandController cmd = new CommandController();
     private ChatRoomsController chat = new ChatRoomsController();
+    private FileHandler fh = new FileHandler();
     
     private final static String ENV_AMQPURL_NAME  = "amqp://iiilqiyz:IB5oVZP1FEUICOlk9jpf7LsDrFynH-wQ@raven.rmq.cloudamqp.com/iiilqiyz";
     private final static String TEST_QUEUE = "HOLA";
@@ -77,10 +79,32 @@ public class ChatWebSocketHandler {
     	}
     	cmd.db.disconnectUser(username);
     }
+    
+    @OnWebSocketMessage
+    public void onMessage(byte buf[], int offset, int length) {
+    	// Only gets here when sending a image
+    	System.out.println("[FILE] " + buf.toString());
+    	
+    	// Handle file... Minio, etc.
+    }
 
     @OnWebSocketMessage
     public void onMessage(Session user, String message) throws IOException, TimeoutException, SQLException {
-        String sender = Chat.userUsernameMap.get(user);
+        // Only gets here when sending a text message
+    	System.out.println("[MESSAGE] " + message);
+
+    	String sender = Chat.userUsernameMap.get(user);
+    	
+    	// Modify message if file uploaded
+    	boolean fileUploaded = false;
+    	String modified = "";
+    	if(message.contains("!FILE:")) {
+    		fileUploaded = true;
+    		String filename = message.replaceAll("!FILE:", "");
+    		modified = sender + " ha enviado el fichero " + filename + ".\n";
+    				modified += "Para recuperarlo, escribe\n";
+    				modified += "!GETFILE " + filename;
+    	}
  
         Pair<ChatRoomsController, String> res = cmd.parseMessage(chat, message, sender);
         chat = res.getFirst();
@@ -218,6 +242,14 @@ public class ChatWebSocketHandler {
         else if(res.getSecond().equals("UPDATEUSERS")) {
         	chat = Chat.serverSaysToUser("Server", "Actualizada lista de usuarios.", chat, sender);
         }
+        else if(fileUploaded) {
+        	 ChatRoom cr = chat.isUserOnRoom(sender);
+	       	 if(cr != null) {
+	       		 chat = Chat.sendMessageToChannel(sender, modified, cr.getId(), chat);
+	       	 } else {
+	       		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
+	       	 }        
+       	}
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }
