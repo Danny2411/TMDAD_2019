@@ -55,6 +55,27 @@ function updateChat(msg) {
  
 }
 
+// Send file function
+function sendFile() {
+    var file = document.getElementById('filename').files[0];
+    ws.send('filename:'+file.name);
+    var reader = new FileReader();
+    var rawData = new ArrayBuffer();            
+    //alert(file.name);
+
+    reader.loadend = function() {
+
+    }
+    reader.onload = function(e) {
+        rawData = e.target.result;
+        ws.send(rawData);
+        alert("the File has been transferred.")
+        ws.send('end');
+    }
+
+    reader.readAsArrayBuffer(file);
+}
+
 //Helper function for inserting HTML as the first child of an element
 function insert(targetId, message) {
     id(targetId).insertAdjacentHTML("afterbegin", message);

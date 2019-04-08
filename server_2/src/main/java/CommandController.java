@@ -148,7 +148,9 @@ public class CommandController {
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
-				db.insertMsgToDatabase(sender, cr, msg2);
+				if(cr != null) {
+					db.insertMsgToDatabase(sender, cr, msg2);
+				}
 				break;	
 			case "!CLEAR":
 				ok = "CLEAR";
