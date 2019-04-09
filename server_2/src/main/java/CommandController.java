@@ -35,25 +35,60 @@ public class CommandController {
 					db.insertUserToDatabase(cr, sender);
 				}
 				break;
-			case "!JOINROOM" :
-				boolean success = chat.joinRoom(Long.parseLong(parts[1]), sender);
-				if(!success) {
-					ok = "NOJOIN";
+			case "!INVITE" :
+				cr = chat.isUserOnRoom(sender);
+				if(parts.length < 2 || parts.length > 2) {
+					ok = "NODSTTOINVITE";
 				} else {
-					ok = "JOINED";
+					ok = "INVITE" + "!" + parts[1] + "!" + cr.getId();
 					
 					// DATABASE
 					cr = chat.isUserOnRoom(sender);
-					List<String> mensajes = db.getMessagesFromRoom(cr);
-					for(String mensaje : mensajes) {
-						// CENSOR
-						Pair<String, List<String>> c_res = cs.censorMessage(mensaje);
-						if(c_res.getSecond().size() > 0) {
-							db.saveCensor(mensaje, c_res.getSecond(), sender, cr);
-						}					
-						ok += ";" + c_res.getFirst();
-					}					
-					db.insertUserToDatabase(cr, sender);
+					db.insertMsgToDatabase(sender, cr, "Se ha invitado a " + parts[1] + " a la sala.");
+				}
+				break;
+			case "!JOINROOM" :
+				
+				// Check if user has been invited to the room	
+				List<ChatRoom> crs2 = chat.getChatRooms();
+				ChatRoom c2 = null;
+				for(ChatRoom it : crs2) {
+					if(it.getId() == Long.parseLong(parts[1])) {
+						c2 = it;
+					}
+				}
+				if(c2 == null) {
+					ok = "NOJOIN";
+				} else {
+					boolean success = false;
+					List<String> messages = db.getMessagesFromRoom(c2);
+					for(String m : messages) {
+						if(m.equals("Se ha invitado a " + sender + " a la sala.")) {
+							success = true;
+						}
+					}
+					if(success == true) {
+						success = chat.joinRoom(Long.parseLong(parts[1]), sender);
+						if(!success) {
+							ok = "NOJOIN";
+						} else {
+							ok = "JOINED";
+							// DATABASE
+							cr = chat.isUserOnRoom(sender);
+							List<String> mensajes = db.getMessagesFromRoom(cr);
+							for(String mensaje : mensajes) {
+								// CENSOR
+								Pair<String, List<String>> c_res = cs.censorMessage(mensaje);
+								if(c_res.getSecond().size() > 0) {
+									db.saveCensor(mensaje, c_res.getSecond(), sender, cr);
+								}					
+								ok += ";" + c_res.getFirst();
+							}					
+							db.insertUserToDatabase(cr, sender);
+						} 
+					} else {
+						ok = "NOJOINPERMISOSs";
+					}
 				}
 				break;
 			case "!LEAVEROOM" :
@@ -213,6 +248,7 @@ public class CommandController {
 		String list = "";
 		list += "!HELP to show available commands\n";
 		list += "!CREATEROOM <name> to create a new room\n";
+		list += "!INVITE <user> to invite a user to the current room\n";
 		list += "!JOINROOM <id> to join a new room\n";
 		list += "!LEAVEROOM to leave the current room\n";
 		list += "!DELETEROOM <id> to delete a room you created\n";

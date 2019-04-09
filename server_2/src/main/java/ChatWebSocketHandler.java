@@ -141,7 +141,16 @@ public class ChatWebSocketHandler {
                 	chat = Chat.recoverMessages(orig_sender, orig_msg, chat, sender, cr);
         		}
         	}
-        }  
+        } 
+        else if(res.getSecond().contains("NODSTTOINVITE")) {
+        	chat = Chat.serverSaysToUser("Server", "EL formato de la invitación no es correcto.", chat, sender);
+        }
+        else if(res.getSecond().contains("INVITE")) {
+        	String dst = res.getSecond().split("!")[1];
+        	String id = res.getSecond().split("!")[2];
+        	chat = Chat.serverSaysToUser("Server", sender + " te ha invitado a la sala " + id + ".", chat, dst);
+        	chat = Chat.serverSaysToUser("Server", "Has invitado a " + dst + " a la sala " + id + ".", chat, sender);
+        }
         else if(res.getSecond().contains("SENDMSGTOROOM")) {
         	 ChatRoom cr = chat.isUserOnRoom(sender);
         	 String m = res.getSecond();
