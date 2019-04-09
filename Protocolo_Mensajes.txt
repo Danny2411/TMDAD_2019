@@ -1,0 +1,82 @@
+Documentación Protocolo de Comunicación:
+
+Para comunicar los clientes con el sistema, se ha hecho uso de WebSockets. No 
+obstante, al haber implementado un sistema basado en comandos, se ha dado lugar
+a un nuevo protocolo que, aunque a bajo nivel ha hecho uso de la lógica de los 
+WebSockets, tiene ciertas consideraciones a más alto nivel.
+
+El protocolo se basa en el envío de mensajes por WebSockets encabezados por 
+una de las palabras claves que soporta, siendo descartados todos aquellos
+mensajes que no mantengan esa norma. De igual forma, si algún mensaje estuviese
+mal estructurado, el servidor no entenderá el contenido de dicho mensaje.
+
+Se considera un mensaje válido según el protocolo cualquiera que se ajuste a 
+alguna de las siguientes especificaciones, y su efecto será el correspondiente 
+al mismo.
+
+!HELP
+	Pre:	-
+	Post:	Listará los comandos disponibles.
+	
+!CREATEROOM <name>
+	Pre: 	El usuario NO debe estar en una sala.
+	Post: 	Creará una sala pública con el nombre <name>, y le asignará un 
+			identificador único que será el que emplearán otros usuarios para 
+			unirse.
+	
+!JOINROOM <id>
+	Pre: 	La sala <id> debe existir.
+			El usuario no debe estar en una sala.
+	Post: 	Unirá al usuario a la sala <id> e informará a los demás miembros
+	
+!LEAVEROOM
+	Pre:	El usuario debe estar en una sala.
+	Post:	El usuario abandonará la sala y el sistema informará a los demás 
+			usuarios.
+
+!DELETEROOM {<id>}			
+	Pre:	El usuario debe estar en una sala.
+	Post:	Se eliminará la sala <id> siempre y cuando haya sido creada por el 
+			usuario, y se expulsará a los usuarios que se encuentren en ella en
+			ese momento. Si el usuario no indica un <id> de sala, se eliminará 
+			la sala en la que se encuentre en ese momento, con los mismos
+			efectos prácticos que el caso previo.
+			
+!AVAILABLEROOMS
+	Pre:	-
+	Post:	Listará las salas públicas disponibles.
+	
+!SEND <user> <msg>
+	Pre:	El usuario NO debe estar en una sala.
+	Post:	Creará una sala privada con <user> y le enviará el mensaje <msg>.
+	
+!CHATW <user>
+	Pre:	El usuario NO debe estar en una sala.
+	Post:	Creará una sala privada con <user>.
+	
+!SENDR <msg>
+	Pre:	El usuario debe estar en una sala.
+	Post:	Se enciará el mensaje <msg> a la sala actual.
+	
+!CLEAR
+	Pre:	-
+	Post:	Limpiará el cuadro de mensajes del usuario.
+	
+!CHANGENAME <name>
+	Pre:	-
+	Post:	Cambiará el nombre del usuario a <name> siempre y cuando esté
+			disponible. Si no, se le asignará un nombre predefinido hasta que 
+			decida cambiarlo por uno disponible.
+			
+!SUPERUSER <password>
+	Pre:	-
+	Post:	El usuario adquirirá los privilegios de administrador si la 
+			contraseña <password> es la definida. 
+			
+!BROADCAST <msg>
+	Pre:	El usuario debe ser administrador.
+	Post:	Enviará el mensaje <msg> a todos los usuarios del sistema.
+	
+!UPDATEUSERS
+	Pre:	-
+	Post:	Actualizará la lista de usuarios conectados.

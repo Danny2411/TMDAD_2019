@@ -17,7 +17,7 @@ import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;  
 
-@WebSocket
+@WebSocket(maxBinaryMessageSize = 1048576)
 public class ChatWebSocketHandler {
 
     private String sender, msg;
@@ -27,7 +27,8 @@ public class ChatWebSocketHandler {
     
     private final static String ENV_AMQPURL_NAME  = "amqp://iiilqiyz:IB5oVZP1FEUICOlk9jpf7LsDrFynH-wQ@raven.rmq.cloudamqp.com/iiilqiyz";
     private final static String TEST_QUEUE = "HOLA";
-
+    private final static int MAX_FILE_SIZE = 1024 * 1024 * 1024;  // 1MB
+    
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
     	String req = user.getUpgradeRequest().getRequestURI().toString();
@@ -60,6 +61,7 @@ public class ChatWebSocketHandler {
         for(String s : pending) {
         	chat = Chat.serverSaysToUser("Server", "Tienes mensajes disponibles en la sala de ID = " + s + ".", chat, username);
         }
+
     }
 
     @OnWebSocketClose
