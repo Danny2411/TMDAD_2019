@@ -63,6 +63,7 @@ public class CommandController {
 					boolean success = false;
 					List<String> messages = db.getMessagesFromRoom(c2);
 					for(String m : messages) {
+						m = m.split("!")[1];
 						if(m.equals("Se ha invitado a " + sender + " a la sala.")) {
 							success = true;
 						}
