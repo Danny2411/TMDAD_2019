@@ -70,8 +70,8 @@ function sendFile() {
     }
     reader.onload = function(e) {
         rawData = e.target.result;
+        webSocket.send("!FILE:" + file.name);
         webSocket.send(rawData);
-		webSocket.send("!FILE:" + file.name);
     }
     reader.readAsArrayBuffer(file);
 }

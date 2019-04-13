@@ -85,8 +85,7 @@ public class ChatWebSocketHandler {
     public void onMessage(byte buf[], int offset, int length) {
     	// Only gets here when sending a image
     	System.out.println("[FILE] " + buf.toString());
-    	
-    	// Handle file... Minio, etc.
+    	fh.insertFile(buf);
     }
 
     @OnWebSocketMessage
@@ -102,6 +101,7 @@ public class ChatWebSocketHandler {
     	if(message.contains("!FILE:")) {
     		fileUploaded = true;
     		String filename = message.replaceAll("!FILE:", "");
+    		fh.setName(filename);
     		modified = sender + " ha enviado el fichero " + filename + ".\n";
     				modified += "Para recuperarlo, escribe\n";
     				modified += "!GETFILE " + filename;
@@ -276,6 +276,12 @@ public class ChatWebSocketHandler {
 	       		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
 	       	 }        
        	}
+        else if(res.getSecond().contains("DOWNLOAD")) {
+        	String filename = res.getSecond().split("!")[1];
+        	String url = fh.getFile(filename).getFirst();
+        	byte buf[] = fh.getFile(filename).getSecond();
+        	chat = Chat.serverSaysToUser("Server", url, chat, sender);
+        }
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }

@@ -257,6 +257,20 @@ public class CommandController {
 				// DATABASE
 				db.deleteRoom(cr);
 				break;
+			case "!GETFILE":
+				cr = chat.isUserOnRoom(sender);
+				if(parts.length > 1 && parts.length < 3) {
+					String filename = parts[1];
+					boolean exists = db.findFileInDatabase(filename);
+					if(exists) {
+						ok = "DOWNLOAD" + "!" + filename;
+					} else {
+						ok = "BADARG";
+					}
+				} else {
+					ok = "BADARG";
+				}
+				break;
 			case "!UPDATEUSERS":
 				ok = "UPDATEUSERS";
 				break;

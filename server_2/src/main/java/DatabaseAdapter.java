@@ -281,4 +281,26 @@ public class DatabaseAdapter {
 		}	
 		return mensajes;
 	}
+	
+	// Check if file was sent in room
+	public boolean findFileInDatabase(String name) {
+		try {
+			Statement stmt = con.createStatement();
+			// Check private rooms of a user
+		    String sql = "SELECT text FROM mensajes m";
+		    ResultSet rs = stmt.executeQuery(sql);
+		    // For each room, check if there are messages
+		    while(rs.next()){	 
+		         String m  = rs.getString("text"); 
+		         if(m.contains("!GETFILE") && m.contains(name)) {
+		        	 return true;
+		         }
+		      }
+		      rs.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}	
+		return false;
+	}
 }
