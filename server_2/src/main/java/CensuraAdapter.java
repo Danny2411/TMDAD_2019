@@ -1,9 +1,13 @@
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 // Class to check how to censor words
 public class CensuraAdapter {
@@ -24,8 +28,23 @@ public class CensuraAdapter {
 	
 	// Connects to database
 	public void connectToDatabase() throws SQLException {
-		con = DriverManager.getConnection("jdbc:mysql://localhost/tmdad_schema?" +
-                "user=root&password=2411&serverTimezone=UTC");
+		try (InputStream input = new FileInputStream("config/config.properties")) {
+
+            Properties prop = new Properties();
+
+            // load a properties file
+            prop.load(input);
+            
+            String c = "jdbc:mysql://" + prop.getProperty("db.url") + "/" +  prop.getProperty("db.schema") 
+			+ "?user=" + prop.getProperty("db.user")
+			+ "&password=" + prop.getProperty("db.password")
+			+ "&serverTimezone=UTC";
+
+            con = DriverManager.getConnection(c);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 	}
 	
 	

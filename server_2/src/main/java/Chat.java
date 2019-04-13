@@ -210,9 +210,13 @@ public class Chat {
   //Sends a message from one user to all users, along with a list of current usernames
     public static ChatRoomsManager recoverMessages(String sender, String msg, ChatRoomsManager chat, String user, ChatRoom cr) {
     	
-    	
-        
-    	String ch = cr.getName();
+    	String tmp = "";
+    	if(cr.getPriv() == false) {
+    		tmp = cr.getName() + " - ID: " + cr.getId();
+    	} else {
+    		tmp = cr.getName();
+    	}
+    	String ch = tmp;
     	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
     		String u = userUsernameMap.get(session);
     		if (user.equals(u)) {
