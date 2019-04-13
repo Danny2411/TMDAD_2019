@@ -43,6 +43,7 @@ public class Chat {
                     .put("userMessage", createHtmlMessageFromSender(sender, message))
                     .put("userlist", userUsernameMap.values())
                     .put("currentchannel", channel)
+                    .put("isfile", "no")
                     .put("yourname", userUsernameMap.get(session))
                     .put("notificationlist", notifications.get(session))
                 ));
@@ -93,8 +94,64 @@ public class Chat {
 	                    .put("userMessage", createHtmlMessageFromSender(sender, message))
 	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", final_name)
+	                    .put("isfile", "no")
 	                    .put("yourname", userUsernameMap.get(session))
 	                    .put("notificationlist", notifications.get(session))
+	                ));
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	            }
+    		}
+
+        });
+    	
+    	return chat;
+      
+    }
+    
+  //Sends a message from one user to all users, along with a list of current usernames
+    public static ChatRoomsManager downloadFile(String sender, String message, Long room, ChatRoomsManager chat, String user, byte buf[], String filename) {
+    	
+    	
+    	System.out.println("[DFile] " + filename);
+    	System.out.println("[DFile] " + new String(buf));
+    	
+    	
+    	ChatRoom c = null;
+    	List<ChatRoom> cr = chat.getChatRooms();
+        for(int i = 0; i < cr.size(); i++ ) {
+        	for(String uir : cr.get(i).getUsers()) {
+        		if(uir.equals(user)) {
+        			c = cr.get(i);
+            		break;
+        		}
+        	}
+        }
+      
+        String currentchannel = "";
+        if (c != null) {
+        	if(c.getPriv() == false) {
+        		currentchannel = c.getName() + " - ID: " + c.getId();
+        	} else {
+        		currentchannel = c.getName();
+        	}
+        } else {
+        	currentchannel = "No channel";
+        }
+        final String ch = currentchannel;
+        final String wildcard = "yes";
+    	userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
+    		String u = userUsernameMap.get(session);
+    		if (user.equals(u)) {
+    			 try {
+	                session.getRemote().sendString(String.valueOf(new JSONObject()
+	                	.put("userMessage", createHtmlMessageFromSender(sender, message))
+	                	.put("file", buf)
+	                	.put("route", filename)
+	                	.put("isfile", "yes")
+	                    .put("userlist", userUsernameMap.values())
+	                    .put("currentchannel", ch)
+	                    .put("yourname", userUsernameMap.get(session))
 	                ));
 	            } catch (Exception e) {
 	                e.printStackTrace();
@@ -141,6 +198,7 @@ public class Chat {
 	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
 	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", ch)
+	                    .put("isfile", "no")
 	                    .put("yourname", userUsernameMap.get(session))
 	                    .put("notificationlist", notifications.get(session))
 	                ));
@@ -189,6 +247,7 @@ public class Chat {
     	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
     	                    .put("userlist", userUsernameMap.values())
     	                    .put("currentchannel", ch)
+    	                    .put("isfile", "no")
     	                    .put("yourname", userUsernameMap.get(session))
     	                    .put("notificationlist", notifications.get(session))
     	                ));
@@ -225,6 +284,7 @@ public class Chat {
 	                    .put("userMessage", createHtmlMessageFromSender(sender, msg))
 	                    .put("userlist", userUsernameMap.values())
 	                    .put("currentchannel", ch)
+	                    .put("isfile", "no")
 	                    .put("yourname", userUsernameMap.get(session))
 	                    .put("notificationlist", notifications.get(session))
 	                ));
@@ -251,6 +311,7 @@ public class Chat {
         		try {
                     session.getRemote().sendString(String.valueOf(new JSONObject()
                         .put("notificationlist", notifications.get(session))
+                        .put("isfile", "no")
                     ));
                 } catch (Exception e) {
                     e.printStackTrace();

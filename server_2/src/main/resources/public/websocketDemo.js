@@ -43,6 +43,23 @@ function updateChat(msg) {
 	    }
 	    insert("chat", data.userMessage);
 	}
+	
+	if(data.isfile.includes("y")){
+
+    	var arr = data.file;
+		var byteArray = new Uint8Array(arr);
+		var a = window.document.createElement('a');
+		
+		a.href = window.URL.createObjectURL(new Blob([byteArray], { type: 'application/octet-stream' }));
+		a.download = data.route;
+		
+		// Append anchor to body.
+		document.body.appendChild(a);
+		a.click();
+		
+		// Remove anchor from body
+		document.body.removeChild(a);
+    }
     
     id("userlist").innerHTML = "";
     data.userlist.forEach(function (user) {

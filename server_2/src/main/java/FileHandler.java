@@ -41,7 +41,7 @@ public class FileHandler {
 		        // Make a new bucket to hold files.
 		    	minioClient.makeBucket("chatfiles");
 		    }
-;
+
 	    } catch(MinioException e) {
 	    	System.out.println("[MinIO] Error occurred: " + e);
 	    } catch (IOException ioe) {

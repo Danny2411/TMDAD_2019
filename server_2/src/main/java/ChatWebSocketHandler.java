@@ -277,10 +277,15 @@ public class ChatWebSocketHandler {
 	       	 }        
        	}
         else if(res.getSecond().contains("DOWNLOAD")) {
-        	String filename = res.getSecond().split("!")[1];
-        	String url = fh.getFile(filename).getFirst();
-        	byte buf[] = fh.getFile(filename).getSecond();
-        	chat = Chat.serverSaysToUser("Server", url, chat, sender);
+        	ChatRoom cr = chat.isUserOnRoom(sender);
+        	if(cr != null) {
+        		String filename = res.getSecond().split("!")[1];
+            	String url = fh.getFile(filename).getFirst();
+            	byte buf[] = fh.getFile(filename).getSecond();
+            	chat = Chat.downloadFile("Server", url, cr.getId(), chat, sender, buf, filename);
+        	} else {
+        		chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
+        	}
         }
         else {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
