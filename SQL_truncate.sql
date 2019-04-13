@@ -1,1 +1,1 @@
-truncate mensajes; truncate salas; truncate usuarios; truncate mensajes_censurados;
+truncate mensajes; truncate salas; truncate usuarios; truncate mensajes_censurados; 

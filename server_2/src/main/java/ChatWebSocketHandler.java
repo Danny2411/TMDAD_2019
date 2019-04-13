@@ -257,6 +257,7 @@ public class ChatWebSocketHandler {
         	 ChatRoom cr = chat.isUserOnRoom(sender);
 	       	 if(cr != null) {
 	       		 chat = Chat.sendMessageToChannel(sender, modified, cr.getId(), chat);
+	       		 cmd.db.insertMsgToDatabase(sender, cr, modified);
 	       	 } else {
 	       		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
 	       	 }        

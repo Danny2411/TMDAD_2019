@@ -50,6 +50,7 @@ public class CommandController {
 			case "!JOINROOM" :
 				
 				// Check if user has been invited to the room	
+				// ONLY IF ITS PUBLIC
 				List<ChatRoom> crs2 = chat.getChatRooms();
 				ChatRoom c2 = null;
 				for(ChatRoom it : crs2) {
@@ -68,7 +69,7 @@ public class CommandController {
 							success = true;
 						}
 					}
-					if(success == true) {
+					if(success == true || (c2.getPriv() == true && (c2.getAllowed().equals(sender) || c2.getCreator().equals(sender)))) {
 						success = chat.joinRoom(Long.parseLong(parts[1]), sender);
 						if(!success) {
 							ok = "NOJOIN";
@@ -141,6 +142,7 @@ public class CommandController {
 					
 						// DATABASE
 						cr = chat.isUserOnRoom(sender);
+						db.insertCRToDatabase(cr);
 						db.insertMsgToDatabase(sender, cr, msg2);
 					}
 				} catch (Exception e) {
