@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class ChatRoomsController {
+public class ChatRoomsManager {
 
 	private List<ChatRoom> chatRooms = new ArrayList<ChatRoom>();	
 	

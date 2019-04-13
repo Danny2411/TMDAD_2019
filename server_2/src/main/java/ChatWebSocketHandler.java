@@ -22,12 +22,11 @@ public class ChatWebSocketHandler {
 
     private String sender, msg;
     private CommandController cmd = new CommandController();
-    private ChatRoomsController chat = new ChatRoomsController();
+    private ChatRoomsManager chat = new ChatRoomsManager();
     private FileHandler fh = new FileHandler();
     
     private final static String ENV_AMQPURL_NAME  = "amqp://iiilqiyz:IB5oVZP1FEUICOlk9jpf7LsDrFynH-wQ@raven.rmq.cloudamqp.com/iiilqiyz";
     private final static String TEST_QUEUE = "HOLA";
-    private final static int MAX_FILE_SIZE = 1024 * 1024 * 1024;  // 1MB
     
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
@@ -108,7 +107,7 @@ public class ChatWebSocketHandler {
     				modified += "!GETFILE " + filename;
     	}
  
-        Pair<ChatRoomsController, String> res = cmd.parseMessage(chat, message, sender);
+        Pair<ChatRoomsManager, String> res = cmd.parseMessage(chat, message, sender);
         chat = res.getFirst();
     
         if(res.getSecond().equals("HELP")) {
@@ -143,13 +142,28 @@ public class ChatWebSocketHandler {
         	}
         } 
         else if(res.getSecond().contains("NODSTTOINVITE")) {
-        	chat = Chat.serverSaysToUser("Server", "EL formato de la invitación no es correcto.", chat, sender);
+        	chat = Chat.serverSaysToUser("Server", "El formato de la invitación no es correcto.", chat, sender);
+        }
+        else if(res.getSecond().contains("BADINVITE")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes realizar esa invitación.", chat, sender);
         }
         else if(res.getSecond().contains("INVITE")) {
         	String dst = res.getSecond().split("!")[1];
         	String id = res.getSecond().split("!")[2];
         	chat = Chat.serverSaysToUser("Server", sender + " te ha invitado a la sala " + id + ".", chat, dst);
         	chat = Chat.serverSaysToUser("Server", "Has invitado a " + dst + " a la sala " + id + ".", chat, sender);
+        }
+        else if(res.getSecond().contains("NODSTTOKICK")) {
+        	chat = Chat.serverSaysToUser("Server", "El formato de la expulsión no es correcto.", chat, sender);
+        }
+        else if(res.getSecond().contains("BADKICK")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes realizar esa expulsión.", chat, sender);
+        }
+        else if(res.getSecond().contains("KICK")) {
+        	String dst = res.getSecond().split("!")[1];
+        	String id = res.getSecond().split("!")[2];
+        	chat = Chat.serverSaysToUser("Server", sender + " te ha expulsado de la sala " + id + ".", chat, dst);
+        	chat = Chat.serverSaysToUser("Server", "Has expulsado a " + dst + " de la sala " + id + ".", chat, sender);
         }
         else if(res.getSecond().contains("SENDMSGTOROOM")) {
         	 ChatRoom cr = chat.isUserOnRoom(sender);

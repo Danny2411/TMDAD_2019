@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // This class is used to controll the access to database
-public class DatabaseController {
+public class DatabaseAdapter {
 
 	// Connection to database
 	private static java.sql.Connection con;
@@ -17,7 +17,7 @@ public class DatabaseController {
 	}
 
 	public static void setCon(java.sql.Connection con) {
-		DatabaseController.con = con;
+		DatabaseAdapter.con = con;
 	}
 	
 	// Connects to database
@@ -34,6 +34,19 @@ public class DatabaseController {
 			java.sql.Timestamp date = new java.sql.Timestamp(new java.util.Date().getTime());
 			return stmt.executeUpdate("INSERT INTO mensajes (src_usr, dst_sala, type, text, timestamp) VALUES ('" 
 					 	+ sender + "', '" + cr.getId() + "', 'text', '" + m + "', '" + date + "')"); 
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
+	}
+	
+	// Remove a MSG to DDBB
+	public int removeMsgToDatabase(ChatRoom cr , String m) {
+		try {
+			Statement stmt = con.createStatement();  
+			// Remoce invitation message
+			stmt = con.createStatement();
+			return stmt.executeUpdate("DELETE FROM mensajes WHERE text = '" + m + "' and dst_sala = " + cr.getId());	
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return -1;

@@ -1,4 +1,3 @@
-import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -7,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 // Class to check how to censor words
-public class CensuraController {
+public class CensuraAdapter {
 
 	// Connection to database
 	private static java.sql.Connection con;
@@ -17,7 +16,7 @@ public class CensuraController {
 	}
 
 	public void setCon(java.sql.Connection con) {
-		this.con = con;
+		CensuraAdapter.con = con;
 	}
 	
 	// List to keep strings that must be cesnored
@@ -53,7 +52,7 @@ public class CensuraController {
 	}
 
 	
-	public CensuraController() {
+	public CensuraAdapter() {
 		censoredStrings = new ArrayList<String>();
 		try {
 			connectToDatabase();
@@ -64,7 +63,7 @@ public class CensuraController {
 		censoredStrings.add("berenjena");
 	}
 	
-	public CensuraController(ArrayList<String> c) {
+	public CensuraAdapter(ArrayList<String> c) {
 		censoredStrings = c;
 	}
 	

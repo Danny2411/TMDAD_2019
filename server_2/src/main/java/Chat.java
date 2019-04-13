@@ -1,5 +1,4 @@
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -26,7 +25,7 @@ public class Chat {
     }
 
     //Sends a message from one user to all users, along with a list of current usernames
-    public static ChatRoomsController broadcastMessage(String sender, String message, ChatRoomsController chat) {
+    public static ChatRoomsManager broadcastMessage(String sender, String message, ChatRoomsManager chat) {
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
         	String channel = "";
         	ChatRoom c = chat.isUserOnRoom(userUsernameMap.get(session));
@@ -65,7 +64,7 @@ public class Chat {
     }
     
     //Sends a message from one user to all users, along with a list of current usernames
-    public static ChatRoomsController sendMessageToChannel(String sender, String message, Long room, ChatRoomsController chat) {
+    public static ChatRoomsManager sendMessageToChannel(String sender, String message, Long room, ChatRoomsManager chat) {
     	
     	ChatRoom c = null;
     	List<ChatRoom> cr = chat.getChatRooms();
@@ -109,7 +108,7 @@ public class Chat {
     }
     
   //Sends a message from one user to all users, along with a list of current usernames
-    public static ChatRoomsController serverSaysToUser(String sender, String msg, ChatRoomsController chat, String user) {
+    public static ChatRoomsManager serverSaysToUser(String sender, String msg, ChatRoomsManager chat, String user) {
     	
     	ChatRoom c = null;
     	List<ChatRoom> cr = chat.getChatRooms();
@@ -157,7 +156,7 @@ public class Chat {
     }
     
   //Sends a message from one user to all users, along with a list of current usernames
-    public static ChatRoomsController userSaysToUser(String sender, String msg, ChatRoomsController chat, String user) {
+    public static ChatRoomsManager userSaysToUser(String sender, String msg, ChatRoomsManager chat, String user) {
     	
     	ChatRoom c = null;
     	List<ChatRoom> cr = chat.getChatRooms();
@@ -209,7 +208,7 @@ public class Chat {
     }
     
   //Sends a message from one user to all users, along with a list of current usernames
-    public static ChatRoomsController recoverMessages(String sender, String msg, ChatRoomsController chat, String user, ChatRoom cr) {
+    public static ChatRoomsManager recoverMessages(String sender, String msg, ChatRoomsManager chat, String user, ChatRoom cr) {
     	
     	
         
@@ -241,7 +240,7 @@ public class Chat {
     }
     
   //Sends a message from one user to all users, along with a list of current usernames
-    public static ChatRoomsController notify(String user, String message, ChatRoomsController chat) {
+    public static ChatRoomsManager notify(String user, String message, ChatRoomsManager chat) {
         userUsernameMap.keySet().stream().filter(Session::isOpen).forEach(session -> {
        
         	if(userUsernameMap.get(session).equals(user)) {

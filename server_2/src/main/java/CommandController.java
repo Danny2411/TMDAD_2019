@@ -3,13 +3,13 @@ import java.util.List;
 
 public class CommandController {
 	// Database controller
-	public DatabaseController db;
+	public DatabaseAdapter db;
 	// Censor controller
-	public CensuraController cs;
+	public CensuraAdapter cs;
 	// Command controller itself
 	public CommandController() {
-		db = new DatabaseController();
-		cs = new CensuraController();
+		db = new DatabaseAdapter();
+		cs = new CensuraAdapter();
 		try {
 			db.connectToDatabase();
 		} catch (SQLException e) {
@@ -17,7 +17,7 @@ public class CommandController {
 		}
 	}
 	// Parse received messages
-	public Pair<ChatRoomsController, String> parseMessage(ChatRoomsController chat, String msg, String sender) {
+	public Pair<ChatRoomsManager, String> parseMessage(ChatRoomsManager chat, String msg, String sender) {
 		String[] parts = msg.split(" ");
 		String ok = "";
 		ChatRoom cr = null;
@@ -40,11 +40,33 @@ public class CommandController {
 				if(parts.length < 2 || parts.length > 2) {
 					ok = "NODSTTOINVITE";
 				} else {
-					ok = "INVITE" + "!" + parts[1] + "!" + cr.getId();
-					
-					// DATABASE
-					cr = chat.isUserOnRoom(sender);
-					db.insertMsgToDatabase(sender, cr, "Se ha invitado a " + parts[1] + " a la sala.");
+					if(cr == null || !cr.getCreator().equals(sender)) {
+						ok = "BADINVITE";
+					} else {
+						ok = "INVITE" + "!" + parts[1] + "!" + cr.getId();
+						
+						// DATABASE
+						cr = chat.isUserOnRoom(sender);
+						db.insertMsgToDatabase(sender, cr, "Se ha invitado a " + parts[1] + " a la sala.");
+					}
+				}
+				break;
+			case "!KICK" :
+				cr = chat.isUserOnRoom(sender);
+				if(parts.length < 2 || parts.length > 2) {
+					ok = "NODSTTOKICK";
+				} else {
+					if(cr == null || !cr.getCreator().equals(sender)) {
+						ok = "BADKICK";
+					} else {
+						ok = "KICK" + "!" + parts[1] + "!" + cr.getId();
+						chat.leaveRoom(parts[1]);
+						
+						// DATABASE
+						cr = chat.isUserOnRoom(sender);
+						db.removeUserFromRoom(cr, parts[1]);
+						db.removeMsgToDatabase(cr, "Se ha invitado a " + parts[1] + " a la sala.");
+					}
 				}
 				break;
 			case "!JOINROOM" :
@@ -152,7 +174,7 @@ public class CommandController {
 			case "!CHATW":
 				// Check if user is on a private room with the other
 				String d2 = parts[1];
-				String res = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
+				chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
 				
 				ok = "JOINED";
 				
@@ -242,7 +264,7 @@ public class CommandController {
 				ok = "HELP";
 				break;
 		}
-		return new Pair<ChatRoomsController, String>(chat,ok);
+		return new Pair<ChatRoomsManager, String>(chat,ok);
 	}
 	
 	
@@ -252,6 +274,7 @@ public class CommandController {
 		list += "!HELP to show available commands\n";
 		list += "!CREATEROOM <name> to create a new room\n";
 		list += "!INVITE <user> to invite a user to the current room\n";
+		list += "!KICK <user> to kick a user from the current room\n";
 		list += "!JOINROOM <id> to join a new room\n";
 		list += "!LEAVEROOM to leave the current room\n";
 		list += "!DELETEROOM <id> to delete a room you created\n";
