@@ -18,6 +18,10 @@ public class CommandController {
 	}
 	// Parse received messages
 	public Pair<ChatRoomsManager, String> parseMessage(ChatRoomsManager chat, String msg, String sender) {
+		// Guarantee 500 max length
+		if(msg.length() > 499)
+			msg = msg.substring(0, 499);
+		// Rest of the functionalities
 		String[] parts = msg.split(" ");
 		String ok = "";
 		ChatRoom cr = null;
@@ -37,17 +41,21 @@ public class CommandController {
 				break;
 			case "!INVITE" :
 				cr = chat.isUserOnRoom(sender);
-				if(parts.length < 2 || parts.length > 2) {
-					ok = "NODSTTOINVITE";
+				if(cr != null && cr.getPriv() == true) {
+					ok = "NOINVINPRIV";
 				} else {
-					if(cr == null || !cr.getCreator().equals(sender)) {
-						ok = "BADINVITE";
+					if(parts.length < 2 || parts.length > 2) {
+						ok = "NODSTTOINVITE";
 					} else {
-						ok = "INVITE" + "!" + parts[1] + "!" + cr.getId();
-						
-						// DATABASE
-						cr = chat.isUserOnRoom(sender);
-						db.insertMsgToDatabase(sender, cr, "Se ha invitado a " + parts[1] + " a la sala.");
+						if(cr == null || !cr.getCreator().equals(sender)) {
+							ok = "BADINVITE";
+						} else {
+							ok = "INVITE" + "!" + parts[1] + "!" + cr.getId();
+							
+							// DATABASE
+							cr = chat.isUserOnRoom(sender);
+							db.insertMsgToDatabase(sender, cr, "Se ha invitado a " + parts[1] + " a la sala.");
+						}
 					}
 				}
 				break;
@@ -59,7 +67,7 @@ public class CommandController {
 					if(cr == null || !cr.getCreator().equals(sender)) {
 						ok = "BADKICK";
 					} else {
-						ok = "KICK" + "!" + parts[1] + "!" + cr.getId();
+						ok = "KICKONPURPOSE" + "!" + parts[1] + "!" + cr.getId();
 						chat.leaveRoom(parts[1]);
 						
 						// DATABASE

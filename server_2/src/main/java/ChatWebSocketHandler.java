@@ -147,6 +147,9 @@ public class ChatWebSocketHandler {
         else if(res.getSecond().contains("BADINVITE")) {
         	chat = Chat.serverSaysToUser("Server", "No puedes realizar esa invitación.", chat, sender);
         }
+        else if(res.getSecond().contains("NOINVINPRIV")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes invitar en una sala privada.", chat, sender);
+        }
         else if(res.getSecond().contains("INVITE")) {
         	String dst = res.getSecond().split("!")[1];
         	String id = res.getSecond().split("!")[2];
@@ -159,7 +162,7 @@ public class ChatWebSocketHandler {
         else if(res.getSecond().contains("BADKICK")) {
         	chat = Chat.serverSaysToUser("Server", "No puedes realizar esa expulsión.", chat, sender);
         }
-        else if(res.getSecond().contains("KICK")) {
+        else if(res.getSecond().contains("KICKONPURPOSE")) {
         	String dst = res.getSecond().split("!")[1];
         	String id = res.getSecond().split("!")[2];
         	chat = Chat.serverSaysToUser("Server", sender + " te ha expulsado de la sala " + id + ".", chat, dst);
@@ -200,6 +203,11 @@ public class ChatWebSocketHandler {
         				chat = Chat.serverSaysToUser("Server", sender + " ha abandonado la sala.", chat, u);
         			}
         		}
+        		// Get unread messages
+                List<String> pending = cmd.db.checkRoomsWithMessages(sender);
+                for(String s : pending) {
+                	chat = Chat.serverSaysToUser("Server", "Tienes mensajes disponibles en la sala de ID = " + s + ".", chat, sender);
+                }
         	} else {
         		chat = Chat.serverSaysToUser("Server", "Solo se puede abandonar una sala si estás dentro de ella.", chat, sender);
         	}
