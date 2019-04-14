@@ -128,9 +128,11 @@ public class CommandController {
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
-				db.removeUserFromRoom(cr, sender);
-				if(cr.getUsers().size() <= 1) {
-					db.deleteRoom(cr);
+				if(cr != null) {
+					db.removeUserFromRoom(cr, sender);
+					if(cr.getUsers().size() <= 1) {
+						db.deleteRoom(cr);
+					}
 				}
 				break;
 			case "!AVAILABLEROOMS":
@@ -207,13 +209,15 @@ public class CommandController {
 				}
 				
 				// CENSOR
-				Pair<String, List<String>> c_res = cs.censorMessage(msg2);
-				if(c_res.getSecond().size() > 0) {
-					db.saveCensor(msg2, c_res.getSecond(), sender, chat.isUserOnRoom(sender));
+				cr = chat.isUserOnRoom(sender);
+				if(cr != null) {
+					Pair<String, List<String>> c_res = cs.censorMessage(msg2);
+					if(c_res.getSecond().size() > 0) {
+						db.saveCensor(msg2, c_res.getSecond(), sender, chat.isUserOnRoom(sender));
+					}
+					
+					ok = "SENDMSGTOROOM" + "!" + c_res.getFirst();
 				}
-				
-				ok = "SENDMSGTOROOM" + "!" + c_res.getFirst();
-				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
 				if(cr != null) {

@@ -60,6 +60,14 @@ public class ChatWebSocketHandler {
         for(String s : pending) {
         	chat = Chat.serverSaysToUser("Server", "Tienes mensajes disponibles en la sala de ID = " + s + ".", chat, username);
         }
+        
+        // Simulation...
+        /*
+        for(int i = 0; i < 1000; i++) {
+        	Pair<String, String> r = MultiUserTest.test_1();
+        	simulateOnMessage(r.getFirst(), r.getSecond());
+        }
+        */
 
     }
 
@@ -299,6 +307,193 @@ public class ChatWebSocketHandler {
         	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
         }
     }
+    
+
+    public void simulateOnMessage(String sender, String message) throws IOException, TimeoutException, SQLException {
+        // Only gets here when sending a text message
+    	System.out.println("[MESSAGE] " + message);
+    	
+    	// Modify message if file uploaded
+    	boolean fileUploaded = false;
+    	String modified = "";
+    	if(message.contains("!FILE:")) {
+    		fileUploaded = true;
+    		String filename = message.replaceAll("!FILE:", "");
+    		fh.setName(filename);
+    		modified = sender + " ha enviado el fichero " + filename + ".\n";
+    				modified += "Para recuperarlo, escribe\n";
+    				modified += "!GETFILE " + filename;
+    	}
+ 
+        Pair<ChatRoomsManager, String> res = cmd.parseMessage(chat, message, sender);
+        chat = res.getFirst();
+    
+        if(res.getSecond().equals("HELP")) {
+        	String cmds = cmd.listCommands();
+        	chat = Chat.serverSaysToUser("Server", cmds, chat, sender);
+        }
+        else if(res.getSecond().equals("YAENSALA")) {
+        	chat = Chat.serverSaysToUser("Server", "No se puede crear una sala estando en otra.", chat, sender);
+        }
+        else if(res.getSecond().contains("CREATED")) {
+        	chat = Chat.serverSaysToUser("Server", "Sala creada con éxito.", chat, sender);
+        } 
+        else if(res.getSecond().contains("NOJOIN")) {
+        	chat = Chat.serverSaysToUser("Server", "No es posible unirse a esa sala.", chat, sender);
+        } 
+        else if(res.getSecond().contains("JOINED")) {
+        	chat = Chat.serverSaysToUser("Server", "Te has unido a la sala " + chat.isUserOnRoom(sender).getName(), chat, sender);
+        	ChatRoom cr = chat.isUserOnRoom(sender);
+        	for(String u : cr.getUsers()) {
+        		if(!u.equals(sender)) {
+        			chat = Chat.serverSaysToUser("Server", sender + " se ha unido a la sala." , chat, u);
+        		}
+        	}
+        	if(res.getSecond().contains(";")) {
+        		String[] pendingMsg = res.getSecond().split(";");
+        		for (int i = 1; i < pendingMsg.length; i++) {
+        			String[] m = pendingMsg[i].split("!");
+        			String orig_sender = m[0];
+        			String orig_msg = m[1];
+                	chat = Chat.recoverMessages(orig_sender, orig_msg, chat, sender, cr);
+        		}
+        	}
+        } 
+        else if(res.getSecond().contains("NODSTTOINVITE")) {
+        	chat = Chat.serverSaysToUser("Server", "El formato de la invitación no es correcto.", chat, sender);
+        }
+        else if(res.getSecond().contains("BADINVITE")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes realizar esa invitación.", chat, sender);
+        }
+        else if(res.getSecond().contains("NOINVINPRIV")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes invitar en una sala privada.", chat, sender);
+        }
+        else if(res.getSecond().contains("INVITE")) {
+        	String dst = res.getSecond().split("!")[1];
+        	String id = res.getSecond().split("!")[2];
+        	chat = Chat.serverSaysToUser("Server", sender + " te ha invitado a la sala " + id + ".", chat, dst);
+        	chat = Chat.serverSaysToUser("Server", "Has invitado a " + dst + " a la sala " + id + ".", chat, sender);
+        }
+        else if(res.getSecond().contains("NODSTTOKICK")) {
+        	chat = Chat.serverSaysToUser("Server", "El formato de la expulsión no es correcto.", chat, sender);
+        }
+        else if(res.getSecond().contains("BADKICK")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes realizar esa expulsión.", chat, sender);
+        }
+        else if(res.getSecond().contains("KICKONPURPOSE")) {
+        	String dst = res.getSecond().split("!")[1];
+        	String id = res.getSecond().split("!")[2];
+        	chat = Chat.serverSaysToUser("Server", sender + " te ha expulsado de la sala " + id + ".", chat, dst);
+        	chat = Chat.serverSaysToUser("Server", "Has expulsado a " + dst + " de la sala " + id + ".", chat, sender);
+        }
+        else if(res.getSecond().contains("SENDMSGTOROOM")) {
+        	 ChatRoom cr = chat.isUserOnRoom(sender);
+        	 String m = res.getSecond();
+        	 if(res.getSecond().contains("CLEAR::")) {
+        		 chat = Chat.serverSaysToUser("Server", "CLEAR CHATS", chat, sender);
+        		 m = m.replaceAll("CLEAR::", "");
+        	 }
+        	 if(cr != null) {
+        		 chat = Chat.sendMessageToChannel(sender, m.split("!")[1], cr.getId(), chat);
+        	 } else {
+        		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
+        	 }
+        } 
+        else if(res.getSecond().contains("SENDMSG")) {
+        	String dest = res.getSecond().split("!")[1];
+        	message = message.split(" ")[2];
+        	chat = Chat.userSaysToUser(sender, message, chat, dest);
+        }
+        else if (res.getSecond().contains("CHATROOMS")){
+        	String crs = res.getSecond().split("!")[1];
+        	String[] salas = crs.split(";");
+        	for(String s : salas) {
+        		chat = Chat.serverSaysToUser("Server", s, chat, sender);
+        	}
+        } 
+        else if(res.getSecond().equals("LEAVINGROOM")) { 
+        	ChatRoom cr = chat.isUserOnRoom(sender);
+        	if(cr != null) {
+				chat.leaveRoom(sender);
+        		chat = Chat.serverSaysToUser("Server", "Abandonando sala " + cr.getName() + ".", chat, sender);
+        		if(cr.getUsers().size() > 0) {
+        			for(String u : cr.getUsers()) {
+        				chat = Chat.serverSaysToUser("Server", sender + " ha abandonado la sala.", chat, u);
+        			}
+        		}
+        		// Get unread messages
+                List<String> pending = cmd.db.checkRoomsWithMessages(sender);
+                for(String s : pending) {
+                	chat = Chat.serverSaysToUser("Server", "Tienes mensajes disponibles en la sala de ID = " + s + ".", chat, sender);
+                }
+        	} else {
+        		chat = Chat.serverSaysToUser("Server", "Solo se puede abandonar una sala si estás dentro de ella.", chat, sender);
+        	}
+        } 
+        else if(res.getSecond().equals("BADARG")) {
+        	chat = Chat.serverSaysToUser("Server", "El mensaje no es correcto.", chat, sender);
+        }
+        else if(res.getSecond().equals("CLEAR")) {
+    		chat = Chat.serverSaysToUser("Server", "CLEAR CHATS", chat, sender);
+        } 
+        else if(res.getSecond().equals("OKROOT")) {
+        	chat = Chat.serverSaysToUser("Server", "Ahora eres todopoderoso.", chat, sender);
+        }
+        else if(res.getSecond().equals("BADROOT")) {
+        	chat = Chat.serverSaysToUser("Server", "No tienes permisos. Se informará de esto.", chat, sender);
+        }
+        else if(res.getSecond().equals("ROOTNOCHANGE")) {
+        	chat = Chat.serverSaysToUser("Server", "El todopoderoso no debe cambiar de nombre.", chat, sender);
+        }
+        else if(res.getSecond().contains("BROADCAST!")) {
+        	String bcast_m = res.getSecond().replaceAll("BROADCAST!","");
+        	chat = Chat.broadcastMessage("El todopoderoso", bcast_m , chat);
+        }
+        else if(res.getSecond().equals("BCASTNOROOT")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes hacer broadcast sin privilegios.", chat, sender);
+        }
+        else if(res.getSecond().equals("DELNOCREATOR")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes borrar la sala de otro.", chat, sender);
+        }
+        else if(res.getSecond().equals("DELNOROOM")) {
+        	chat = Chat.serverSaysToUser("Server", "No puedes borrar una sala inexistente.", chat, sender);
+        }
+        else if(res.getSecond().contains("KICK")) {
+        	String users = res.getSecond().replaceAll("KICK::", "");
+        	String[] us = users.split("::");
+        	for(String u : us) {
+            	chat = Chat.serverSaysToUser("Server", "Se ha eliminado la sala en la que estabas.", chat, u);
+        	}
+        }
+        else if(res.getSecond().equals("UPDATEUSERS")) {
+        	chat = Chat.serverSaysToUser("Server", "Actualizada lista de usuarios.", chat, sender);
+        }
+        else if(fileUploaded) {
+        	 ChatRoom cr = chat.isUserOnRoom(sender);
+	       	 if(cr != null) {
+	       		 chat = Chat.sendMessageToChannel(sender, modified, cr.getId(), chat);
+	       		 cmd.db.insertMsgToDatabase(sender, cr, modified);
+	       	 } else {
+	       		 chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
+	       	 }        
+       	}
+        else if(res.getSecond().contains("DOWNLOAD")) {
+        	ChatRoom cr = chat.isUserOnRoom(sender);
+        	if(cr != null) {
+        		String filename = res.getSecond().split("!")[1];
+            	String url = fh.getFile(filename).getFirst();
+            	byte buf[] = fh.getFile(filename).getSecond();
+            	chat = Chat.downloadFile("Server", url, cr.getId(), chat, sender, buf, filename);
+        	} else {
+        		chat = Chat.serverSaysToUser("Server", "Primero debes entrar en una sala.", chat, sender);
+        	}
+        }
+        else {
+        	chat = Chat.serverSaysToUser("Server", "Comando desconocido.", chat, sender);
+        }
+    }
+
+
     
 
 }
