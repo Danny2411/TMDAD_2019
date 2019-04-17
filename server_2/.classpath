@@ -29,5 +29,10 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="D:/Universidad/MASTER/S2/TM_Distribuidos/Repository/server_2/libs/mysql-connector-java-8.0.15.jar"/>
+	<classpathentry kind="lib" path="D:/Universidad/MASTER/S2/TM_Distribuidos/Repository/server_2/libs/rabbitmq-java-client-bin-3.5.4/commons-cli-1.1.jar"/>
+	<classpathentry kind="lib" path="D:/Universidad/MASTER/S2/TM_Distribuidos/Repository/server_2/libs/rabbitmq-java-client-bin-3.5.4/commons-io-1.2.jar"/>
+	<classpathentry kind="lib" path="D:/Universidad/MASTER/S2/TM_Distribuidos/Repository/server_2/libs/rabbitmq-java-client-bin-3.5.4/junit.jar"/>
+	<classpathentry kind="lib" path="D:/Universidad/MASTER/S2/TM_Distribuidos/Repository/server_2/libs/rabbitmq-java-client-bin-3.5.4/rabbitmq-client.jar"/>
+	<classpathentry kind="lib" path="D:/Universidad/MASTER/S2/TM_Distribuidos/Repository/server_2/libs/rabbitmq-java-client-bin-3.5.4/rabbitmq-client-tests.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

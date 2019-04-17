@@ -1,4 +1,5 @@
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommandController {
@@ -6,6 +7,9 @@ public class CommandController {
 	public DatabaseAdapter db;
 	// Censor controller
 	public CensuraAdapter cs;
+	// RabbitMQ Adapter
+    private RabbitMQAdapter rabbitMQ = new RabbitMQAdapter();
+	
 	// Command controller itself
 	public CommandController() {
 		db = new DatabaseAdapter();
@@ -37,6 +41,9 @@ public class CommandController {
 					cr = chat.isUserOnRoom(sender);
 					db.insertCRToDatabase(cr);
 					db.insertUserToDatabase(cr, sender);
+					
+					// RabbitMQ
+					rabbitMQ.createQueue(Long.toString(cr.getId()));
 				}
 				break;
 			case "!INVITE" :
@@ -108,6 +115,7 @@ public class CommandController {
 							// DATABASE
 							cr = chat.isUserOnRoom(sender);
 							List<String> mensajes = db.getMessagesFromRoom(cr);
+							
 							for(String mensaje : mensajes) {
 								// CENSOR
 								Pair<String, List<String>> c_res = cs.censorMessage(mensaje);
@@ -176,6 +184,12 @@ public class CommandController {
 						cr = chat.isUserOnRoom(sender);
 						db.insertCRToDatabase(cr);
 						db.insertMsgToDatabase(sender, cr, msg2);
+									
+						// RabbitMQ
+						if(cr != null) {
+							rabbitMQ.createQueue(Long.toString(cr.getId()));
+							rabbitMQ.publishMessage(Long.toString(cr.getId()), msg2);
+						}
 					}
 				} catch (Exception e) {
 					ok = "BADARG";
@@ -187,6 +201,17 @@ public class CommandController {
 				chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, d2);
 				
 				ok = "JOINED";
+				
+				// RabbitMQ
+				cr = chat.isUserOnRoom(sender);
+				rabbitMQ.createQueue(Long.toString(cr.getId()));
+				String rbb = "Mensajes en [RabbitMQ]:";
+				while(true) {
+					rbb = rabbitMQ.consumeMessage(Long.toString(cr.getId()));
+					if(rbb == null)
+						break;
+					System.out.println("[RabbitMQ] " + rbb);
+				}
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
@@ -218,11 +243,19 @@ public class CommandController {
 					
 					ok = "SENDMSGTOROOM" + "!" + c_res.getFirst();
 				}
+				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
 				if(cr != null) {
 					db.insertMsgToDatabase(sender, cr, msg2);
 				}
+				
+				// RabbitMQ
+				if(cr != null && cr.getPriv() == true) {
+					rabbitMQ.createQueue(Long.toString(cr.getId()));
+					rabbitMQ.publishMessage(Long.toString(cr.getId()), msg2);
+				}
+
 				break;	
 			case "!CLEAR":
 				ok = "CLEAR";
@@ -268,6 +301,10 @@ public class CommandController {
 				
 				// DATABASE
 				db.deleteRoom(cr);
+				
+				// RabbitMQ
+				rabbitMQ.removeQueue(Long.toString(cr.getId()));
+				
 				break;
 			case "!GETFILE":
 				cr = chat.isUserOnRoom(sender);

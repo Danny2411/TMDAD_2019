@@ -24,9 +24,7 @@ public class ChatWebSocketHandler {
     private CommandController cmd = new CommandController();
     private ChatRoomsManager chat = new ChatRoomsManager();
     private FileHandler fh = new FileHandler();
-    
-    private final static String ENV_AMQPURL_NAME  = "amqp://iiilqiyz:IB5oVZP1FEUICOlk9jpf7LsDrFynH-wQ@raven.rmq.cloudamqp.com/iiilqiyz";
-    private final static String TEST_QUEUE = "HOLA";
+
     
     @OnWebSocketConnect
     public void onConnect(Session user) throws Exception {
