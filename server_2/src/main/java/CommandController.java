@@ -1,6 +1,15 @@
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 public class CommandController {
 	// Database controller
@@ -9,6 +18,8 @@ public class CommandController {
 	public CensuraAdapter cs;
 	// RabbitMQ Adapter
     private RabbitMQAdapter rabbitMQ = new RabbitMQAdapter();
+    // Censor host
+    private String censorHost;
 	
 	// Command controller itself
 	public CommandController() {
@@ -19,6 +30,14 @@ public class CommandController {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		try (InputStream input = new FileInputStream("config/config.properties")) {
+            Properties prop = new Properties();
+            // load a properties file
+            prop.load(input);   
+            censorHost = prop.getProperty("censor.host");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
 	}
 	// Parse received messages
 	public Pair<ChatRoomsManager, String> parseMessage(ChatRoomsManager chat, String msg, String sender) {
@@ -118,11 +137,44 @@ public class CommandController {
 							
 							for(String mensaje : mensajes) {
 								// CENSOR
+								/*
 								Pair<String, List<String>> c_res = cs.censorMessage(mensaje);
 								if(c_res.getSecond().size() > 0) {
 									db.saveCensor(mensaje, c_res.getSecond(), sender, cr);
 								}					
 								ok += ";" + c_res.getFirst();
+								*/
+								
+								// DISTRIBUTED CENSOR
+								try {
+									Socket socket = new Socket(censorHost, 4568);
+									PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+									BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+									out.println(mensaje);
+									String fromServer;
+							
+									if ((fromServer = in.readLine()) != null) 
+									    System.out.println("Server: " + fromServer);
+									
+									socket.close();
+									
+									// Check censored words
+									String original_msg = mensaje;
+									mensaje = fromServer.split("!!")[0];
+									String cw = fromServer.split("!!")[1].replace("[", "").replace("]", "");
+									if(cw != null && !cw.equals("")) {
+										String[] censoredWords = cw.split(",");
+										List<String> ls = new ArrayList<String>();
+										for(String s_ : censoredWords)
+											ls.add(s_);
+										db.saveCensor(original_msg, ls, sender, chat.isUserOnRoom(sender));
+									}
+									
+									ok += ";" + mensaje;
+									
+								} catch (Exception e) {
+									e.printStackTrace();
+								}
 							}					
 							db.insertUserToDatabase(cr, sender);
 						} 
@@ -173,12 +225,45 @@ public class CommandController {
 					ok = chat.createPrivateRoom("PRIVATE ROOM " + sender + " - " +  parts[1], sender, dest);
 					if(ok.contains("!")) {
 						// CENSOR
+						/*
 						Pair<String, List<String>> c_res = cs.censorMessage(msg2);
 						if(c_res.getSecond().size() > 0) {
 							db.saveCensor(msg2, c_res.getSecond(), sender, chat.isUserOnRoom(sender));
 						}
 						
 						ok += c_res.getFirst();
+						*/
+						
+						// DISTRIBUTED CENSOR
+						try {
+							Socket socket = new Socket(censorHost, 4568);
+							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+							BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+							out.println(msg2);
+							String fromServer;
+					
+							if ((fromServer = in.readLine()) != null) 
+							    System.out.println("Server: " + fromServer);
+							
+							socket.close();
+							
+							// Check censored words
+							String original_msg = msg2;
+							msg2 = fromServer.split("!!")[0];
+							String cw = fromServer.split("!!")[1].replace("[", "").replace("]", "");
+							if(cw != null && !cw.equals("")) {
+								String[] censoredWords = cw.split(",");
+								List<String> ls = new ArrayList<String>();
+								for(String s_ : censoredWords)
+									ls.add(s_);
+								db.saveCensor(original_msg, ls, sender, chat.isUserOnRoom(sender));
+							}
+							
+							ok += msg2;
+							
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					
 						// DATABASE
 						cr = chat.isUserOnRoom(sender);
@@ -234,6 +319,7 @@ public class CommandController {
 				}
 				
 				// CENSOR
+				/*
 				cr = chat.isUserOnRoom(sender);
 				if(cr != null) {
 					Pair<String, List<String>> c_res = cs.censorMessage(msg2);
@@ -242,6 +328,38 @@ public class CommandController {
 					}
 					
 					ok = "SENDMSGTOROOM" + "!" + c_res.getFirst();
+				}
+				*/
+				
+				// DISTRIBUTED CENSOR
+				try {
+					Socket socket = new Socket(censorHost, 4568);
+					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+					BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+					out.println(msg2);
+					String fromServer;
+			
+					if ((fromServer = in.readLine()) != null) 
+					    System.out.println("Server: " + fromServer);
+					
+					socket.close();
+					
+					// Check censored words
+					String original_msg = msg2;
+					msg2 = fromServer.split("!!")[0];
+					String cw = fromServer.split("!!")[1].replace("[", "").replace("]", "");
+					if(cw != null && !cw.equals("")) {
+						String[] censoredWords = cw.split(",");
+						List<String> ls = new ArrayList<String>();
+						for(String s_ : censoredWords)
+							ls.add(s_);
+						db.saveCensor(original_msg, ls, sender, chat.isUserOnRoom(sender));
+					}
+					
+					ok = "SENDMSGTOROOM" + "!" + msg2;
+					
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 				
 				// DATABASE
