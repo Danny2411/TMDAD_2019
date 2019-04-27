@@ -1,0 +1,2 @@
+[0427/103504.360:ERROR:file_io.cc(89)] ReadExactly: expected 36, observed 0
+[0427/103816.995:ERROR:file_io_win.cc(243)] SetEndOfFile: La operación solicitada no se puede realizar en un archivo con una sección asignada a usuario abierta. (0x4C8)

@@ -146,6 +146,7 @@ public class CommandController {
 								*/
 								
 								// DISTRIBUTED CENSOR
+								/*
 								try {
 									Socket socket = new Socket(censorHost, 4568);
 									PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -153,8 +154,9 @@ public class CommandController {
 									out.println(mensaje);
 									String fromServer;
 							
-									if ((fromServer = in.readLine()) != null) 
+									if ((fromServer = in.readLine()) != null) {
 									    System.out.println("Server: " + fromServer);
+									}
 									
 									socket.close();
 									
@@ -175,6 +177,7 @@ public class CommandController {
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
+								*/
 							}					
 							db.insertUserToDatabase(cr, sender);
 						} 
@@ -235,6 +238,7 @@ public class CommandController {
 						*/
 						
 						// DISTRIBUTED CENSOR
+						/*
 						try {
 							Socket socket = new Socket(censorHost, 4568);
 							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -242,9 +246,9 @@ public class CommandController {
 							out.println(msg2);
 							String fromServer;
 					
-							if ((fromServer = in.readLine()) != null) 
-							    System.out.println("Server: " + fromServer);
-							
+							if ((fromServer = in.readLine()) != null) {
+								// System.out.println("Server: " + fromServer);
+							}
 							socket.close();
 							
 							// Check censored words
@@ -264,6 +268,7 @@ public class CommandController {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
+						*/
 					
 						// DATABASE
 						cr = chat.isUserOnRoom(sender);
@@ -332,6 +337,7 @@ public class CommandController {
 				*/
 				
 				// DISTRIBUTED CENSOR
+				/*
 				try {
 					Socket socket = new Socket(censorHost, 4568);
 					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -339,8 +345,9 @@ public class CommandController {
 					out.println(msg2);
 					String fromServer;
 			
-					if ((fromServer = in.readLine()) != null) 
-					    System.out.println("Server: " + fromServer);
+					if ((fromServer = in.readLine()) != null) { 
+					   // System.out.println("Server: " + fromServer);
+					}
 					
 					socket.close();
 					
@@ -361,6 +368,8 @@ public class CommandController {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
+				*/
+				ok = "SENDMSGTOROOM" + "!" + msg2;
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);

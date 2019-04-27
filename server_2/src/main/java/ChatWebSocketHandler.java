@@ -15,7 +15,12 @@ import com.rabbitmq.client.Channel;
 
 import java.sql.*;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;  
+import java.text.SimpleDateFormat;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+
 
 @WebSocket(maxBinaryMessageSize = 1048576)
 public class ChatWebSocketHandler {
@@ -66,9 +71,152 @@ public class ChatWebSocketHandler {
         	simulateOnMessage(r.getFirst(), r.getSecond());
         }
         */
+        
+        // Multi-thread simulation
+        // multiThreadSimulation();
 
     }
+    
+    public void multiThreadSimulation() {
+    	
+    	// used this class to check max threads 
+    	// Got from: https://github.com/jheusser/core-java-performance-examples/blob/master/src/test/java/com/google/code/java/core/threads/MaxThreadsMain.java
+    	class MaxThreadsMain {
 
+    		  public final int BATCH_SIZE = 10000;
+
+    		  public void run() throws InterruptedException {
+    		    List<Thread> threads = new ArrayList<Thread>();
+    		    try {
+    		      for (int i = 0; i <= 100 * 10000; i += BATCH_SIZE) {
+    		        long start = System.currentTimeMillis();
+    		        addThread(threads, BATCH_SIZE);
+    		        long end = System.currentTimeMillis();
+    		        Thread.sleep(1000);
+    		        long delay = end - start;
+    		        System.out.printf("%,d threads: Time to create %,d threads was %.3f seconds %n", threads.size(), BATCH_SIZE, delay / 1e3);
+    		      }
+    		    } catch (Throwable e) {
+    		      System.err.printf("After creating %,d threads, ", threads.size());
+    		      e.printStackTrace();
+    		    }
+
+    		  }
+
+    		  private void addThread(List<Thread> threads, int num) {
+    		    for (int i = 0; i < num; i++) {
+    		      Thread t = new Thread(new Runnable() {
+    		        @Override
+    		        public void run() {
+    		          try {
+    		            while (!Thread.interrupted()) {
+    		              Thread.sleep(1000);
+    		            }
+    		          } catch (InterruptedException ignored) {
+    		            //
+    		          }
+    		        }
+    		      });
+    		      t.setDaemon(true);
+    		      t.setPriority(Thread.MIN_PRIORITY);
+    		      threads.add(t);
+    		      t.start();
+    		    }
+    		  }
+    		}
+    	
+    	
+    	// Private class to test
+    	class UserThread{
+    		
+    		private Object s = new Object();
+    	    private String name;
+    	    private int count = 0;
+    	    private int NUM_MENSAJES = 10;
+    	    private int NUM_USERS;
+    	    
+    	    public UserThread(int n) {
+    	    	NUM_USERS = n;
+    	    }
+
+    	    public void run() {
+				ExecutorService es = Executors.newCachedThreadPool();
+    	    	for(int i = 0; i < NUM_USERS; i++){
+    	            es.execute(new Thread(new Runnable(){
+    	                    public void run(){
+    	                        synchronized(s){
+    	                            count += 1;
+    	                            System.err.println("New user #"+count);
+    	                        }
+    	                        
+    	                        for(int j = 0; j < NUM_MENSAJES; j++){
+    	                            try {
+    	                                Thread.sleep(1000);
+    	                            	simulateOnMessage("User" + count, "!SENDR mensaje");
+    	                            	
+    	                            } catch (Exception e){
+    	                                System.err.println(e);
+    	                            }
+    	                        }
+    	                    }
+    	                }));
+    	            
+    	        }
+    			es.shutdown();
+    			try {
+    				boolean finished = es.awaitTermination(5, TimeUnit.MINUTES);
+    			} catch (InterruptedException e) {
+    				e.printStackTrace();
+    			}
+    	    }
+    	}
+    	
+    	try {
+    		// # of users
+    		int n = 500;
+    		int r = 10;
+    		int gap = n / r;
+    		
+    		// Create one room to check something
+			for(int i = 0; i < r; i++) {
+				simulateOnMessage("Daniel_" + i, "!CREATEROOM sala_thread_" + i);
+				for(int j = i * gap; j < (i+1) * gap; j++) {
+					simulateOnMessage("Daniel_" + i, "!INVITE User" + j);
+				}
+			}
+			
+			long startTime = System.nanoTime(); 
+			
+			// Simulate join room
+			int current_room = 0;
+			for(int i = 0; i < n; i++) {
+				if(i % gap == 0) {
+					current_room++;
+				}
+				simulateOnMessage("User" + i, "!JOINROOM " + current_room);
+			}
+			
+			for(int i = 0; i < n * 100; i++){
+                try {   
+                	simulateOnMessage("User" + ThreadLocalRandom.current().nextInt(1, n-1), "!SENDR mensaje");
+                } catch (Exception e){
+                    System.err.println(e);
+                }
+            }
+			
+			System.out.println("All joined.");
+			// Create threads...
+			//UserThread myRunnable = new UserThread(n);
+			//myRunnable.run();
+			// Time...
+			long estimatedTime = System.nanoTime() - startTime;
+			System.out.println("Elapsed time: " + (double)estimatedTime / 1_000_000_000.0 + " sec.");
+		} catch (IOException | TimeoutException | SQLException e) {
+			e.printStackTrace();
+		}   	
+    } 
+    
+    
     @OnWebSocketClose
     public void onClose(Session user, int statusCode, String reason) {
         String username = Chat.userUsernameMap.get(user);
@@ -306,11 +454,7 @@ public class ChatWebSocketHandler {
         }
     }
     
-
     public void simulateOnMessage(String sender, String message) throws IOException, TimeoutException, SQLException {
-        // Only gets here when sending a text message
-    	System.out.println("[MESSAGE] " + message);
-    	
     	// Modify message if file uploaded
     	boolean fileUploaded = false;
     	String modified = "";
@@ -491,7 +635,5 @@ public class ChatWebSocketHandler {
         }
     }
 
-
-    
 
 }

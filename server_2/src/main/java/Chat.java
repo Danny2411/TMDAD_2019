@@ -113,8 +113,8 @@ public class Chat {
     public static ChatRoomsManager downloadFile(String sender, String message, Long room, ChatRoomsManager chat, String user, byte buf[], String filename) {
     	
     	
-    	System.out.println("[DFile] " + filename);
-    	System.out.println("[DFile] " + new String(buf));
+    	// System.out.println("[DFile] " + filename);
+    	// System.out.println("[DFile] " + new String(buf));
     	
     	
     	ChatRoom c = null;
