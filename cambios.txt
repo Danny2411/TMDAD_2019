@@ -1,0 +1,25 @@
+Cambios:
+
+Mejorado el Repo: Wiki, etc.
+Nueva Arquitectura
+Información no Hard-Coded
+Kick User de una sala
+MinIO funcional (subida, bajada y almacén)
+Pruebas automáticas
+RabbitMQ
+Probar en distribuido
+
+----
+Post reunion 1 con Pedro
+----
+
+Censura sacado a otro elemento
+Mejor automatización de pruebas
+Memoria 
+
+----
+Post reunion 2 con Pedro
+----
+
+Mejoras y añadidos a la memoria
+Más pruebas

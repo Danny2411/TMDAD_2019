@@ -146,7 +146,7 @@ public class CommandController {
 								*/
 								
 								// DISTRIBUTED CENSOR
-								/*
+								
 								try {
 									Socket socket = new Socket(censorHost, 4568);
 									PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -177,7 +177,7 @@ public class CommandController {
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
-								*/
+								
 							}					
 							db.insertUserToDatabase(cr, sender);
 						} 
@@ -194,7 +194,8 @@ public class CommandController {
 				if(cr != null) {
 					db.removeUserFromRoom(cr, sender);
 					if(cr.getUsers().size() <= 1) {
-						db.deleteRoom(cr);
+						// No borrar si se van todos: podría ser caída del sistema
+						// db.deleteRoom(cr);
 					}
 				}
 				break;
@@ -238,7 +239,7 @@ public class CommandController {
 						*/
 						
 						// DISTRIBUTED CENSOR
-						/*
+						
 						try {
 							Socket socket = new Socket(censorHost, 4568);
 							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -268,7 +269,7 @@ public class CommandController {
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
-						*/
+						
 					
 						// DATABASE
 						cr = chat.isUserOnRoom(sender);
@@ -337,7 +338,7 @@ public class CommandController {
 				*/
 				
 				// DISTRIBUTED CENSOR
-				/*
+				
 				try {
 					Socket socket = new Socket(censorHost, 4568);
 					PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -368,7 +369,7 @@ public class CommandController {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				*/
+				
 				ok = "SENDMSGTOROOM" + "!" + msg2;
 				
 				// DATABASE

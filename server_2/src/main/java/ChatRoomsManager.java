@@ -69,7 +69,7 @@ public class ChatRoomsManager {
 
 	
 	// Delete an existing room
-		public String deleteRoom(Long id, String user) {
+	public String deleteRoom(Long id, String user) {
 			int idx = -1;
 			for(int i = 0; i < chatRooms.size(); i++) {
 				if (chatRooms.get(i).getId() == id) {
