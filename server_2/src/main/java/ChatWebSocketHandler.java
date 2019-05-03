@@ -132,7 +132,7 @@ public class ChatWebSocketHandler {
     		private Object s = new Object();
     	    private String name;
     	    private int count = 0;
-    	    private int NUM_MENSAJES = 10;
+    	    private int NUM_MENSAJES = 5;
     	    private int NUM_USERS;
     	    
     	    public UserThread(int n) {
@@ -173,8 +173,8 @@ public class ChatWebSocketHandler {
     	
     	try {
     		// # of users
-    		int n = 500;
-    		int r = 10;
+    		int n = 250;
+    		int r = 1;
     		int gap = n / r;
     		
     		// Create one room to check something
@@ -196,7 +196,7 @@ public class ChatWebSocketHandler {
 				simulateOnMessage("User" + i, "!JOINROOM " + current_room);
 			}
 			
-			for(int i = 0; i < n * 100; i++){
+			for(int i = 0; i < n * 5; i++){
                 try {   
                 	simulateOnMessage("User" + ThreadLocalRandom.current().nextInt(1, n-1), "!SENDR mensaje");
                 } catch (Exception e){

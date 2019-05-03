@@ -240,6 +240,7 @@ public class CommandController {
 						
 						// DISTRIBUTED CENSOR
 						
+						
 						try {
 							Socket socket = new Socket(censorHost, 4568);
 							PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
@@ -370,7 +371,7 @@ public class CommandController {
 					e.printStackTrace();
 				}
 				
-				ok = "SENDMSGTOROOM" + "!" + msg2;
+				// ok = "SENDMSGTOROOM" + "!" + msg2;
 				
 				// DATABASE
 				cr = chat.isUserOnRoom(sender);
